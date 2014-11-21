@@ -1664,6 +1664,7 @@ Model MCDP {
                 }
                 Parameter EXCP {
                     Text: "Exceso porcentual para la distancia EDS-NPE respecto a  NPA. Usado en el procedimeinto CalculoCOnectividadRed";
+                    Definition: 1.1;
                 }
                 Parameter PDJO {
                     Text: "Promedio de la diferencia de la jornada de trabajo. ";
@@ -2305,7 +2306,7 @@ Model MCDP {
                 !pos ! (optional) an integer
                 
                 
-                ME::SetAttribute(MCO_CUV,'Definition',"10");
+                !ME::SetAttribute(MCO_CUV,'Definition',"10");
                 
                 ModeloActual:="MCDP_CUV";
                 MCO_GENERICO:=MCO_CUV;! No fuciona porque no está Igualando la Definción si no el valor de la Var
@@ -2594,7 +2595,9 @@ Model MCDP {
             Parameter BestLPBound;
             Parameter BestSolution;
             Parameter Gap;
-            Parameter SolvingTime;
+            Parameter SolvingTime {
+                Unit: s;
+            }
             Parameter TotalTime;
             Parameter InicialTime;
             Parameter EndTime;
