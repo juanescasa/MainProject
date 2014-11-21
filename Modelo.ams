@@ -2313,7 +2313,8 @@ Model MCDP {
                 RES_GENERICO:=RES_CUV;
                 VAR_GENERICO:=VAR_CUV;
                 
-                Solve MCDP_GENERICO;
+                !Solve MCDP_GENERICO;
+                Solve MCDP_CUV;
             }
         }
         Procedure SolucionMCDP_SUV {
