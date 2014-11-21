@@ -1,0 +1,308 @@
+<?xml version="1.0"?>
+<Page Version="4000" TimeStamp="2014-11-08 21:08:27">
+	<PageEditSize Type="Inherited" />
+	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
+	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
+	<Background RGB="#ffffff" />
+	<PageObject Type="Network Object">
+		<Location top="30" left="12" bottom="390" right="594" />
+		<TabOrder>2</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<HorizontalScrollbar>true</HorizontalScrollbar>
+		<VerticalScrollbar>true</VerticalScrollbar>
+		<EqualXYScale>false</EqualXYScale>
+		<ScrollControl>NavigationButtons</ScrollControl>
+		<VisibleArea>
+			<Left>MarIzq</Left>
+			<Right>MarDer</Right>
+			<Top>MarSup</Top>
+			<Bottom>MarInf</Bottom>
+		</VisibleArea>
+		<Background>
+			<Background_Image_Source ID="101">"No Image"</Background_Image_Source>
+			<Source>
+				<Name ID="1001">"MEDELLIN"</Name>
+				<Type ID="1002">"Bing Map"</Type>
+			</Source>
+			<Layer>
+				<Name ID="2001">"Todo"</Name>
+				<Source ID="2012">"MEDELLIN"</Source>
+			</Layer>
+		</Background>
+		<Node>
+			<Identifier>i</Identifier>
+			<XCoordinate>CoorX( i )</XCoordinate>
+			<YCoordinate>CoorY( i )</YCoordinate>
+			<NumberFormat Width="6" Decimals="2" />
+			<MaximumSize>8</MaximumSize>
+			<TextPosition>Right</TextPosition>
+			<TextShowWhat>ElementName</TextShowWhat>
+		</Node>
+		<Arc>
+			<Identifier>Arc01( i, j, k in lb01, lb02 )</Identifier>
+			<NumberFormat Width="6" Decimals="2" />
+			<MaximumSize>8</MaximumSize>
+			<TextPosition>Right</TextPosition>
+			<Color>ArcColor( k in lb01 )</Color>
+			<Shape>Straight</Shape>
+			<FirstSegment>Horizontal</FirstSegment>
+			<ClickWhere>EntireArc</ClickWhere>
+		</Arc>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="24" left="714" bottom="198" right="1038" />
+		<TabOrder>1</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CoorX( i )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="20" Decimals="10" Alignment="Center" />
+		</ExplicitIdentifier>
+		<ExplicitIdentifier>
+			<Identifier>CoorY( i )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="20" Decimals="10" Alignment="Center" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Selection Object">
+		<SelectionType>DropDownList</SelectionType>
+		<Location top="12" left="606" bottom="42" right="714" />
+		<TabOrder>3</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextShown>ElementName</TextShown>
+		<Border Style="None" />
+		<BackgroundColor RGB="#ffffff" />
+		<ExplicitIdentifier>
+			<Identifier>lb02</Identifier>
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Selection Object">
+		<SelectionType>CheckBoxes</SelectionType>
+		<Location top="48" left="606" bottom="198" right="708" />
+		<TabOrder>4</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextShown>ElementName</TextShown>
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#c0c0c0" />
+		<ExplicitIdentifier>
+			<Identifier>lb01( VEH )</Identifier>
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="630" left="42" bottom="804" right="354" />
+		<TabOrder>5</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>Arc01( i, j, k, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="12" left="180" bottom="36" right="450" />
+		<StaticText>MAPA</StaticText>
+		<Alignment>Center</Alignment>
+		<Font GUID="B11D356B-3F89-4DF6-BE7E-D716FD93BC25" Name="nEGRITA" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="396" left="174" bottom="420" right="444" />
+		<StaticText>DIAGRAMA DE GANTT</StaticText>
+		<Alignment>Center</Alignment>
+		<Font GUID="B11D356B-3F89-4DF6-BE7E-D716FD93BC25" Name="nEGRITA" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Gantt Chart">
+		<Location top="426" left="42" bottom="606" right="612" />
+		<TabOrder>6</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<ColorScheme Number="0" />
+		<Legend>true</Legend>
+		<Y-Labels>true</Y-Labels>
+		<X-Labels>true</X-Labels>
+		<VerticalGridLines>true</VerticalGridLines>
+		<StatusLine>true</StatusLine>
+		<TimeRange>
+			<Upper>MAXTIME( lb02 )</Upper>
+		</TimeRange>
+		<IndexLocations>
+			<RowDomain>k</RowDomain>
+			<LegendDomain>i</LegendDomain>
+		</IndexLocations>
+		<TaskGroup>
+			<Domain>TIPR( i, k, lb02 )</Domain>
+			<Start>TIIN( i, k, lb02 )</Start>
+			<Duration>TIPR( i, k, lb02 )</Duration>
+		</TaskGroup>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="204" left="720" bottom="396" right="924" />
+		<TabOrder>7</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PNPV( i, k )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="402" left="726" bottom="600" right="924" />
+		<TabOrder>10</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PNOI( i, k )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Button">
+		<Location top="660" left="402" bottom="696" right="498" />
+		<TabOrder>13</TabOrder>
+		<LeaveOnEnter>false</LeaveOnEnter>
+		<ButtonType>Text</ButtonType>
+		<Title>"RUN"</Title>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<ActionSequence>
+			<Action Type="Run">
+				<RunWhat>SpecificProcecure</RunWhat>
+				<Procedure>MainExecution</Procedure>
+				<AbortOnError>true</AbortOnError>
+			</Action>
+		</ActionSequence>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="606" left="726" bottom="792" right="1116" />
+		<TabOrder>9</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PNPP( i, j )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Button">
+		<Location top="702" left="402" bottom="738" right="498" />
+		<TabOrder>11</TabOrder>
+		<LeaveOnEnter>false</LeaveOnEnter>
+		<ButtonType>Text</ButtonType>
+		<Title>"Modelo2"</Title>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<ActionSequence>
+			<Action Type="Run">
+				<RunWhat>SpecificProcecure</RunWhat>
+				<Procedure>Tllegadas</Procedure>
+				<AbortOnError>true</AbortOnError>
+			</Action>
+		</ActionSequence>
+	</PageObject>
+	<PageObject Type="Button">
+		<Location top="744" left="402" bottom="780" right="498" />
+		<TabOrder>12</TabOrder>
+		<LeaveOnEnter>false</LeaveOnEnter>
+		<ButtonType>Text</ButtonType>
+		<Title>"Borrar "</Title>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<ActionSequence>
+			<Action Type="Run">
+				<RunWhat>SpecificProcecure</RunWhat>
+				<Procedure>Tllegadas</Procedure>
+				<AbortOnError>true</AbortOnError>
+			</Action>
+			<Action Type="Run">
+				<RunWhat>SpecificProcecure</RunWhat>
+				<Procedure>BorrarSolucion</Procedure>
+				<AbortOnError>true</AbortOnError>
+			</Action>
+		</ActionSequence>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="402" left="930" bottom="594" right="1326" />
+		<TabOrder>8</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PCON( i, j )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="654" left="510" bottom="696" right="648" />
+		<TabOrder>15</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>MCO_CUV</Identifier>
+			<FirstColumn>0</FirstColumn>
+			<NumberFormat Width="5" Decimals="1" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="702" left="510" bottom="744" right="666" />
+		<TabOrder>14</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>MCO_SUV</Identifier>
+			<FirstColumn>0</FirstColumn>
+			<NumberFormat Width="8" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+			<Symbol>PHO</Symbol>
+			<Symbol>VEH</Symbol>
+			<Symbol>PCON</Symbol>
+			<Symbol>PNPV</Symbol>
+			<Symbol>PNOI</Symbol>
+			<Symbol>PNPP</Symbol>
+			<Symbol>MCO_CUV</Symbol>
+			<Symbol>MCO_SUV</Symbol>
+			<Symbol>Tllegadas</Symbol>
+			<Symbol>CoorX</Symbol>
+			<Symbol>CoorY</Symbol>
+			<Symbol>MarDer</Symbol>
+			<Symbol>MarIzq</Symbol>
+			<Symbol>MarSup</Symbol>
+			<Symbol>MarInf</Symbol>
+			<Symbol>Arc01</Symbol>
+			<Symbol>ArcColor</Symbol>
+			<Symbol>lb01</Symbol>
+			<Symbol>lb02</Symbol>
+			<Symbol>TIIN</Symbol>
+			<Symbol>TIPR</Symbol>
+			<Symbol>MAXTIME</Symbol>
+			<Symbol>MainExecution</Symbol>
+			<Symbol>BorrarSolucion</Symbol>
+			<Symbol>t</Symbol>
+			<Symbol>i</Symbol>
+			<Symbol>j</Symbol>
+			<Symbol>k</Symbol>
+		</Model>
+	</UsedReferences>
+</Page>

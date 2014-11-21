@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<Page Version="4000" TimeStamp="2014-08-30 21:17:34">
+	<PageEditSize Type="Inherited" />
+	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
+	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
+	<Background RGB="#ffffff" />
+	<PageObject Type="Table">
+		<Location top="30" left="6" bottom="228" right="252" />
+		<TabOrder>5</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>INV( i, m, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="11" Decimals="8" Alignment="Center" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="30" left="258" bottom="234" right="642" />
+		<TabOrder>1</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CCC( i, m, l, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="11" Decimals="8" Alignment="Center" />
+		</ExplicitIdentifier>
+		<ExplicitIdentifier>
+			<Identifier>DEMA( i, m, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" Alignment="Center" />
+		</ExplicitIdentifier>
+		<ExplicitIdentifier>
+			<Identifier>CAPS( i, m )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="5" Decimals="1" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="252" left="480" bottom="516" right="1038" />
+		<TabOrder>2</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>ATR( i, j, k, t )</Identifier>
+			<Permutation>[2,0,1,3]</Permutation>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="4" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="30" left="654" bottom="234" right="1032" />
+		<TabOrder>3</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>APE( i, m, l, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="4" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="258" left="6" bottom="498" right="216" />
+		<TabOrder>4</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>AVI( i, k, t )</Identifier>
+			<Permutation>[1,0,2]</Permutation>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="4" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="252" left="228" bottom="516" right="474" />
+		<TabOrder>6</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>TLL( i, k, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="7" Decimals="3" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="522" left="714" bottom="666" right="864" />
+		<TabOrder>7</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>AVE( k, t )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="4" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="522" left="870" bottom="666" right="1032" />
+		<TabOrder>8</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>TFJO( k, t )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="1" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="522" left="144" bottom="666" right="702" />
+		<TabOrder>9</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>TIVI( i, j )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+		<ExplicitIdentifier>
+			<Identifier>TSER( i, k )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="522" left="0" bottom="666" right="132" />
+		<TabOrder>10</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CACC( l )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="1" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Button">
+		<Location top="684" left="156" bottom="720" right="312" />
+		<TabOrder>11</TabOrder>
+		<LeaveOnEnter>false</LeaveOnEnter>
+		<ButtonType>Text</ButtonType>
+		<Title>"Correr"</Title>
+		<BackgroundColor RGB="#808080" />
+		<ForegroundColor RGB="#000000" />
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<ActionSequence>
+			<Action Type="Run">
+				<RunWhat>SpecificProcecure</RunWhat>
+				<Procedure>SolucionModeloRuteo</Procedure>
+				<AbortOnError>true</AbortOnError>
+			</Action>
+		</ActionSequence>
+	</PageObject>
+	<PageObject Type="Button">
+		<Location top="684" left="318" bottom="720" right="450" />
+		<TabOrder>12</TabOrder>
+		<LeaveOnEnter>false</LeaveOnEnter>
+		<ButtonType>Text</ButtonType>
+		<Title>"Hallar tiempos de llegada"</Title>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<ActionSequence>
+			<Action Type="Run">
+				<RunWhat>SpecificProcecure</RunWhat>
+				<AbortOnError>true</AbortOnError>
+			</Action>
+		</ActionSequence>
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="6" left="378" bottom="36" right="630" />
+		<StaticText>VARIABLES </StaticText>
+		<Alignment>Center</Alignment>
+		<Font GUID="B11D356B-3F89-4DF6-BE7E-D716FD93BC25" Name="nEGRITA" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Line">
+		<Location top="24" left="6" bottom="24" right="1044" />
+		<LineColor RGB="#000040" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<PageObject Type="Line">
+		<Location top="6" left="12" bottom="6" right="1044" />
+		<LineColor RGB="#000040" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="684" left="522" bottom="834" right="852" />
+		<TabOrder>16</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>INV( i, m, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+			<Symbol>TFJO</Symbol>
+			<Symbol>i</Symbol>
+			<Symbol>j</Symbol>
+			<Symbol>k</Symbol>
+			<Symbol>l</Symbol>
+			<Symbol>m</Symbol>
+			<Symbol>t</Symbol>
+			<Symbol>CCC</Symbol>
+			<Symbol>TSER</Symbol>
+			<Symbol>TLL</Symbol>
+			<Symbol>CACC</Symbol>
+			<Symbol>SolucionModeloRuteo</Symbol>
+			<Symbol>CAPS</Symbol>
+			<Symbol>APE</Symbol>
+			<Symbol>DEMA</Symbol>
+			<Symbol>INV</Symbol>
+			<Symbol>ATR</Symbol>
+			<Symbol>AVE</Symbol>
+			<Symbol>AVI</Symbol>
+			<Symbol>TIVI</Symbol>
+		</Model>
+	</UsedReferences>
+</Page>

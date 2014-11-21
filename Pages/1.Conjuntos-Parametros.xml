@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<Page Version="4000" TimeStamp="2014-08-30 21:17:34">
+	<PageEditSize Type="Inherited" />
+	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
+	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
+	<Background RGB="#ffffff" />
+	<PageObject Type="Table">
+		<Location top="54" left="654" bottom="156" right="756" />
+		<TabOrder>11</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>COM</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="54" left="762" bottom="156" right="864" />
+		<TabOrder>1</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>NOD</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="54" left="870" bottom="156" right="972" />
+		<TabOrder>2</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>NPE( NOD )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="156" left="978" bottom="258" right="1080" />
+		<TabOrder>3</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>NPA( NOD )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="54" left="978" bottom="156" right="1080" />
+		<TabOrder>4</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PRO</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="162" left="654" bottom="264" right="756" />
+		<TabOrder>5</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>NCL( NOD )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="384" left="654" bottom="486" right="858" />
+		<TabOrder>7</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>NVI( i, NOD )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="156" left="864" bottom="258" right="966" />
+		<TabOrder>12</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>VEH</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="384" left="864" bottom="486" right="1074" />
+		<TabOrder>8</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>NLL( j, NOD )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="270" left="654" bottom="372" right="822" />
+		<TabOrder>10</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>COV( k, COM )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="270" left="834" bottom="372" right="978" />
+		<TabOrder>6</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PRC( i, PRO )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="6" left="708" bottom="36" right="960" />
+		<StaticText>CONJUNTOS </StaticText>
+		<Alignment>Center</Alignment>
+		<Font GUID="B11D356B-3F89-4DF6-BE7E-D716FD93BC25" Name="nEGRITA" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="0" left="174" bottom="30" right="426" />
+		<StaticText>PARAMETROS QUE DEFINEN LOS CONJUNTOS</StaticText>
+		<Alignment>Center</Alignment>
+		<Font GUID="B11D356B-3F89-4DF6-BE7E-D716FD93BC25" Name="nEGRITA" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="66" left="18" bottom="198" right="150" />
+		<TabOrder>15</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>TNOD( i )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="15" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="66" left="162" bottom="198" right="372" />
+		<TabOrder>16</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PCOV( l, k )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="15" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="66" left="378" bottom="198" right="588" />
+		<TabOrder>17</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>PPRC( i, m )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="15" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Line">
+		<Location top="36" left="630" bottom="396" right="630" />
+		<LineColor RGB="#000080" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<PageObject Type="Line">
+		<Location top="396" left="630" bottom="396" right="6" />
+		<LineColor RGB="#000080" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<PageObject Type="Line">
+		<Location top="36" left="630" bottom="36" right="6" />
+		<LineColor RGB="#000080" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<PageObject Type="Line">
+		<Location top="36" left="6" bottom="396" right="6" />
+		<LineColor RGB="#000080" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<PageObject Type="Rectangle">
+		<Location top="36" left="642" bottom="498" right="1092" />
+		<Shape>Open</Shape>
+		<FillColor RGB="#ffffff" />
+		<LineColor RGB="#000080" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+			<Symbol>*</Symbol>
+			<Symbol>NLL</Symbol>
+			<Symbol>i</Symbol>
+			<Symbol>j</Symbol>
+			<Symbol>k</Symbol>
+			<Symbol>l</Symbol>
+			<Symbol>m</Symbol>
+			<Symbol>PCOV</Symbol>
+			<Symbol>TNOD</Symbol>
+			<Symbol>NOD</Symbol>
+			<Symbol>NPA</Symbol>
+			<Symbol>NPE</Symbol>
+			<Symbol>NVI</Symbol>
+			<Symbol>COM</Symbol>
+			<Symbol>COV</Symbol>
+			<Symbol>PPRC</Symbol>
+			<Symbol>PRC</Symbol>
+			<Symbol>PRO</Symbol>
+			<Symbol>NCL</Symbol>
+			<Symbol>VEH</Symbol>
+		</Model>
+	</UsedReferences>
+</Page>

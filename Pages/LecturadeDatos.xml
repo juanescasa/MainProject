@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<Page Version="4000" TimeStamp="2014-09-13 20:15:07">
+	<PageEditSize Type="Inherited" />
+	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
+	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
+	<Background Inherited="true" />
+	<PageObject Type="Table">
+		<Location top="48" left="78" bottom="96" right="186" />
+		<TabOrder>1</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>ESCE</Identifier>
+			<FirstColumn>0</FirstColumn>
+			<NumberFormat Width="15" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Button">
+		<Location top="66" left="258" bottom="120" right="522" />
+		<TabOrder>2</TabOrder>
+		<LeaveOnEnter>false</LeaveOnEnter>
+		<ButtonType>Text</ButtonType>
+		<Title>"Leer Todo"</Title>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<ActionSequence>
+			<Action Type="Run">
+				<RunWhat>SpecificProcecure</RunWhat>
+				<Procedure>LEER_TODO</Procedure>
+				<AbortOnError>true</AbortOnError>
+			</Action>
+		</ActionSequence>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+			<Symbol>ESCE</Symbol>
+			<Symbol>LEER_TODO</Symbol>
+		</Model>
+	</UsedReferences>
+</Page>

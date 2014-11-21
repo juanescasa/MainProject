@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<TemplateManager>
+	<Page Name="2.Parametros" PageGUID="414D9EBD-4544-427F-BF8C-C364483C836F" />
+	<Page Name="3.Variables" PageGUID="EF04A98D-7038-4F16-9372-7B8925F6EC31" Marked="true" />
+	<Page Name="5.Mapa y Gantt" PageGUID="C4D9C82F-C636-487B-B7E3-1E1AEB031E98" />
+	<Page Name="4.Graficas" PageGUID="44F3D03C-DD43-4735-AE5F-7E0766AE213C" />
+	<Page Name="1.Conjuntos-Parametros" PageGUID="FB3E74DA-38C1-4A8A-AA5A-D56A40888AF3" />
+	<Page Name="All Data Pages" PageGUID="A8D0D75F-B4E0-4820-BC25-3CA3FAB06446" />
+	<Page Name="[Data Page] NLV" PageGUID="11764CF8-BEDD-439B-A293-B7B5686DDB38" />
+	<Page Name="[Data Page] NVV" PageGUID="39181CBC-A221-4F61-9241-A12EF1BB6F31" />
+	<Page Name="[Data Page] DEMA" PageGUID="6112C2F9-799F-44AB-9D10-CCF95F9C3DE2" />
+	<Page Name="[Data Page] CCV" PageGUID="F87BDA1B-4255-4BA6-B7AB-8200565578B0" />
+	<Page Name="[Data Page] AVI" PageGUID="379829D1-A64F-4E2B-91D6-7D77CC2B3A96" />
+	<Page Name="[Data Page] CCIV" PageGUID="105F2BB1-E327-4123-BEBA-8F9FA93626C7" />
+	<Page Name="Parmetros-Validacion" PageGUID="57E854CE-CCEF-4F6B-838E-0BB3FB794B3A" />
+	<Page Name="[Data Page] PCON" PageGUID="F284A19E-E454-49B5-B3F8-E8B303BD4E36" />
+	<Page Name="MensajeDeError" PageGUID="CE4A7067-108E-4ED8-9D8E-86419EF39C73" />
+	<Page Name="LecturadeDatos" PageGUID="8D2E6708-05D5-4DA8-92CC-EB61D663FC93" />
+	<Page Name="[Data Page] ATR" PageGUID="2ACC0451-4404-4F7C-9EAE-D5699460DC4E" />
+</TemplateManager>

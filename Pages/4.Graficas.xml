@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<Page Version="4000" TimeStamp="2014-11-13 11:35:45">
+	<PageEditSize Type="Inherited" />
+	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
+	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
+	<Background RGB="#ffffff" />
+	<PageObject Type="Selection Object">
+		<SelectionType>DropDownList</SelectionType>
+		<Location top="54" left="30" bottom="78" right="174" />
+		<TabOrder>1</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextShown>ElementName</TextShown>
+		<Border Style="None" />
+		<BackgroundColor RGB="#ffffff" />
+		<ExplicitIdentifier>
+			<Identifier>lb04</Identifier>
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Curve">
+		<Location top="54" left="204" bottom="312" right="588" />
+		<TabOrder>6</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<ColorScheme Number="0" />
+		<SwappedAxes>true</SwappedAxes>
+		<Title>true</Title>
+		<Legend>true</Legend>
+		<Y-Labels>true</Y-Labels>
+		<X-Labels>true</X-Labels>
+		<StatusLine>true</StatusLine>
+		<ExplicitIdentifier>
+			<Identifier>CCC( lb04, lb07, l in lb06, t )</Identifier>
+		</ExplicitIdentifier>
+		<DrawLines>true</DrawLines>
+		<MarkPoints>true</MarkPoints>
+	</PageObject>
+	<PageObject Type="Curve">
+		<Location top="54" left="618" bottom="312" right="1020" />
+		<TabOrder>7</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<ColorScheme Number="0" />
+		<SwappedAxes>true</SwappedAxes>
+		<Title>true</Title>
+		<Legend>true</Legend>
+		<Y-Labels>true</Y-Labels>
+		<X-Labels>true</X-Labels>
+		<StatusLine>true</StatusLine>
+		<ExplicitIdentifier>
+			<Identifier>INV( lb04, lb07, t )</Identifier>
+		</ExplicitIdentifier>
+		<DrawLines>true</DrawLines>
+		<MarkPoints>true</MarkPoints>
+	</PageObject>
+	<PageObject Type="Curve">
+		<Location top="324" left="204" bottom="552" right="588" />
+		<TabOrder>8</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<ColorScheme Number="0" />
+		<SwappedAxes>true</SwappedAxes>
+		<Title>true</Title>
+		<Legend>true</Legend>
+		<Y-Labels>true</Y-Labels>
+		<X-Labels>true</X-Labels>
+		<StatusLine>true</StatusLine>
+		<ExplicitIdentifier>
+			<Identifier>DEMA( lb04, lb07, t )</Identifier>
+		</ExplicitIdentifier>
+		<DrawLines>true</DrawLines>
+		<MarkPoints>true</MarkPoints>
+	</PageObject>
+	<PageObject Type="Selection Object">
+		<SelectionType>DropDownList</SelectionType>
+		<Location top="384" left="30" bottom="420" right="174" />
+		<TabOrder>9</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextShown>ElementName</TextShown>
+		<Border Style="None" />
+		<BackgroundColor RGB="#ffffff" />
+		<ExplicitIdentifier>
+			<Identifier>lb05</Identifier>
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Curve">
+		<Location top="330" left="624" bottom="546" right="1020" />
+		<TabOrder>10</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<ColorScheme Number="0" />
+		<SwappedAxes>true</SwappedAxes>
+		<Title>true</Title>
+		<Legend>true</Legend>
+		<Y-Labels>true</Y-Labels>
+		<X-Labels>true</X-Labels>
+		<StatusLine>true</StatusLine>
+		<ExplicitIdentifier>
+			<Identifier>CCV( lb04, lb07, l in lb06, t )</Identifier>
+		</ExplicitIdentifier>
+		<DrawLines>true</DrawLines>
+		<MarkPoints>true</MarkPoints>
+	</PageObject>
+	<PageObject Type="Selection Object">
+		<SelectionType>CheckBoxes</SelectionType>
+		<Location top="120" left="30" bottom="354" right="174" />
+		<TabOrder>11</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextShown>ElementName</TextShown>
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<ExplicitIdentifier>
+			<Identifier>lb06( COM )</Identifier>
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Selection Object">
+		<SelectionType>DropDownList</SelectionType>
+		<Location top="90" left="30" bottom="114" right="174" />
+		<TabOrder>12</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextShown>ElementName</TextShown>
+		<Border Style="None" />
+		<BackgroundColor RGB="#ffffff" />
+		<ExplicitIdentifier>
+			<Identifier>lb07</Identifier>
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Rectangle">
+		<Location top="36" left="18" bottom="564" right="1038" />
+		<Shape>Open</Shape>
+		<FillColor RGB="#ffffff" />
+		<LineColor RGB="#000080" />
+		<LineWidth>2</LineWidth>
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="0" left="372" bottom="30" right="624" />
+		<StaticText>GRÁFICAS</StaticText>
+		<Alignment>Center</Alignment>
+		<Font GUID="B11D356B-3F89-4DF6-BE7E-D716FD93BC25" Name="nEGRITA" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="576" left="24" bottom="780" right="486" />
+		<TabOrder>3</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CCC( i, m, l, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="11" Decimals="8" Alignment="Center" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="576" left="24" bottom="780" right="486" />
+		<TabOrder>2</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CCC( i, m, l, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="11" Decimals="8" Alignment="Center" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="582" left="510" bottom="786" right="1032" />
+		<TabOrder>4</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CCV( i, m, l, t )</Identifier>
+			<FirstColumn>2</FirstColumn>
+			<NumberFormat Width="11" Decimals="8" Alignment="Center" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="798" left="24" bottom="1002" right="546" />
+		<TabOrder>5</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CCIV( m, l )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="11" Decimals="8" Alignment="Center" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+			<Symbol>NOD</Symbol>
+			<Symbol>VEH</Symbol>
+			<Symbol>PRO</Symbol>
+			<Symbol>COM</Symbol>
+			<Symbol>DEMA</Symbol>
+			<Symbol>CCIV</Symbol>
+			<Symbol>CCC</Symbol>
+			<Symbol>INV</Symbol>
+			<Symbol>CCV</Symbol>
+			<Symbol>lb04</Symbol>
+			<Symbol>lb05</Symbol>
+			<Symbol>lb06</Symbol>
+			<Symbol>lb07</Symbol>
+			<Symbol>t</Symbol>
+			<Symbol>i</Symbol>
+			<Symbol>m</Symbol>
+			<Symbol>l</Symbol>
+		</Model>
+	</UsedReferences>
+</Page>

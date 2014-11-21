@@ -1,0 +1,2674 @@
+## ams_version=1.0
+
+Model MCDP {
+    Comment: {
+        "13 de Junio 2014
+        Inexplicablemente pasa esto con las restricciones asociadas albalance de inventario en los clientes
+        The first argument of indexed set \"NLV\" is index \"k\" with set range set \"VEH\".  However, the first set in the domain of indexed set \"NLV\" is set \"NOD\".  These two sets do not have the same root set.
+        cuando se reduce el numero de indices en el dominio de la restricción se solucioa el problema."
+    }
+    Section Conexion_con_DB {
+        DeclarationSection Identidicadores_Lectura_Datos {
+            StringParameter DATA_ESC {
+                Definition: "OACEDS";
+            }
+            Set ESC {
+                Index: s;
+                Definition: data { ESC_001, ESC_002, ESC_003, ESC_004, ESC_005, ESC_006 };
+            }
+            StringParameter ESCE {
+                Text: "Escenario  a  ser leido ";
+            }
+            StringParameter ESCI {
+                IndexDomain: (s);
+                Text: "Escenario indexado";
+                Definition: data { ESC_001 : "'1'",  ESC_002 : "'2'",  ESC_003 : "'3'",  ESC_004 : "'4'",  ESC_005 : "'5'", ESC_006: "'6'"  };
+                Comment: {
+                    "Debido a que no se puede tener un string parametro indexado en las consultas de SQL, en tonces se crea este escenario
+                    el cual se usara para darle los valores a ESCE en cada iteración de lectura de datos, con esto ESCE se igualará al ESCEI(s) para
+                    Cada s, y automáticamente se guardará. En la siguiente iteración s tendrá otro valor por lo tanto ESCEI(s) también y
+                    esto hace que cambie tambié ESCE en cada Iteración"
+                }
+            }
+            ElementParameter ESCN {
+                IndexDomain: (s);
+                Range: ESC;
+            }
+            ElementParameter NOES {
+                Range: AllCases;
+            }
+            Set EST {
+                SubsetOf: AllCases;
+                Text: "conjunto de todos los casos";
+            }
+            StringParameter Directorio_Escenarios;
+        }
+        DatabaseProcedure DB_MAE_TIN {
+            DataSource: "OACEDS";
+            SqlQuery: "Select * from  MAE_TIN";
+            Property: UseResultSet;
+            Mapping: "COD_TIN"-->TIN;
+        }
+        DatabaseProcedure DB_MAE_MAR {
+            DataSource: "OACEDS";
+            SqlQuery: "Select * from  MAE_MAR";
+            Property: UseResultSet;
+            Mapping: "COD_MAR"-->MAR;
+        }
+        DatabaseProcedure DB_MAE_NOD {
+            DataSource: "OACEDS";
+            SqlQuery: "SELECT * FROM MAE_NOD WHERE COD_ESC=" + ESCE;
+            Property: UseResultSet;
+            Mapping: {
+                "COD_NOD"-->i,
+                              "COD_TIN"-->TNOD(i),
+                              "COOR_LON"-->CoorX(i),
+                              "COOR_LAT"-->CoorY(i)
+                              !"COD_MAR"-->MARCA(i),
+            }
+            Comment: {
+                "!!\"SELECT * FROM MAE_NOD WHERE COD_ESC=\'1\'\"!!!"
+            }
+        }
+        DatabaseProcedure DB_MAE_TIV {
+            DataSource: "OACEDS";
+            SqlQuery: "Select * from  MAE_TIV";
+            Property: UseResultSet;
+            Mapping: {
+                "COD_TIV"-->TVE,
+                              "CDUV"-->CDUV(v)
+            }
+        }
+        DatabaseProcedure DB_MAE_VEH {
+            DataSource: "OACEDS";
+            SqlQuery: "SELECT * FROM MAE_VEH WHERE COD_ESC=" + ESCE;
+            Property: UseResultSet;
+            Mapping: {
+                "COD_VEH"-->k,
+                              "CAPV"-->CAPV(k),
+                              "COUV"-->COUV(k)
+            }
+        }
+        DatabaseProcedure DB_MAE_PER {
+            DataSource: "OACEDS";
+            SqlQuery: " SELECT * FROM MAE_PER WHERE  COD_ESC=" + ESCE;
+            Property: UseResultSet;
+            Mapping: {
+                "COD_PER"-->PERH  !revisar si no va a poner problema con el Horizonte
+            }
+        }
+        DatabaseProcedure DB_MAE_PRO {
+            DataSource: "OACEDS";
+            SqlQuery: "Select * from  MAE_PRO";
+            Property: UseResultSet;
+            Mapping: {
+                "COD_PRO"-->m,
+                              "DENS"-->DENS(m)
+            }
+        }
+        DatabaseProcedure DB_MAE_COM {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_COM, CACC " +
+                                      " FROM MAE_COM WHERE COD_COM IN " +
+                                              " (SELECT  COD_COM FROM COM_VEH WHERE COD_VEH IN "  +
+                                                      " (SELECT COD_VEH FROM MAE_VEH WHERE COD_ESC=" + ESCE + " ) " + " AND PCOV='1') "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_COM"-->l,
+                              "CACC"-->CACC(l)
+            }
+        }
+        DatabaseProcedure DB_NOD_NOD1 {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                "SELECT COD_NOD, COD_NOD1, TIVI, PNPP, DIST " +
+                                      " FROM NOD_NOD1 WHERE COD_NOD IN " +
+                                              " (SELECT COD_NOD  FROM MAE_NOD WHERE COD_ESC=" + ESCE + " ) " +
+                                              " AND  COD_NOD1 IN (SELECT COD_NOD  FROM MAE_NOD WHERE COD_ESC=" + ESCE + " ) "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_NOD"-->i,
+                              "COD_NOD1"-->j,
+                              "TIVI"-->TIVI(i,j),
+                              "PNPP"-->PNPP(i,j),
+                              "DIST"-->DIST(i,j)
+            }
+        }
+        DatabaseProcedure DB_TIV_VEH {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_TIV, COD_VEH, PVET " +
+                                      " FROM TIV_VEH WHERE COD_VEH IN " +
+                                              " (SELECT COD_VEH FROM MAE_VEH WHERE COD_ESC=" + ESCE + " )"
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_TIV"-->v,
+                              "COD_VEH"-->k,
+                              "PVET"-->PVET(v,k)
+            }
+        }
+        DatabaseProcedure DB_NOD_PRO {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_NOD, COD_PRO, CALM, CAPS, INVI, PPRC " +
+                                      " FROM NOD_PRO WHERE COD_NOD IN " +
+                                              " (SELECT COD_NOD FROM MAE_NOD WHERE  COD_ESC=" + ESCE + " ) " +
+                                              " AND COD_PRO IN (SELECT COD_PRO FROM MAE_PRO)"
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_NOD"-->i,
+                              "COD_PRO"-->m,
+                              "CALM"-->CALM(i,m),
+                              "CAPS"-->CAPS(i,m),
+                              "INVI"-->INVI(i,m),
+                              "PPRC"-->PPRC(i,m)
+            }
+            Comment: "Nodos <- Productos";
+        }
+        DatabaseProcedure DB_NOD_PER {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_NOD, COD_PER, TMIN, TMAX " +
+                                      " FROM NOD_PER WHERE COD_NOD IN " +
+                                              " (SELECT COD_NOD FROM MAE_NOD WHERE COD_ESC=" + ESCE + " ) " +
+                                              " AND COD_PER IN (SELECT COD_PER FROM MAE_PER WHERE COD_ESC=" + ESCE + " ) "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_NOD"-->i,
+                              "COD_PER"-->t,
+                              "TMIN"-->TMIN(i,t),
+                              "TMAX"-->TMAX(i,t)
+            }
+            Comment: "Nodos Periodos";
+        }
+        DatabaseProcedure DB_NOD_VEH {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                "SELECT   COD_NOD, COD_VEH, PNPV, TSER, PNOI " +
+                                      " FROM NOD_VEH WHERE COD_NOD IN " +
+                                              " (SELECT COD_NOD  FROM MAE_NOD WHERE COD_ESC=" + ESCE + " ) " +
+                                              " AND COD_VEH IN (SELECT COD_VEH  FROM MAE_VEH WHERE COD_ESC=" + ESCE + " )"
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_NOD"-->i,
+                              "COD_VEH"-->k,
+                              "PNPV"-->PNPV(i,k),
+                              "TSER"-->TSER(i,k),
+                              "PNOI"-->PNOI(i,k)
+            }
+        }
+        DatabaseProcedure DB_COM_VEH {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT  COD_VEH, COD_COM, PCOV " +
+                                      " FROM COM_VEH WHERE COD_VEH IN " +
+                                              " (SELECT COD_VEH FROM MAE_VEH WHERE COD_ESC=" + ESCE + " ) AND PCOV='1' "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_VEH"-->k,
+                              "COD_COM"-->l,
+                              "PCOV"-->PCOV(l,k)
+            }
+            Comment: "Compartimientos<-Vehiculos";
+        }
+        DatabaseProcedure DB_VEH_PER {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_VEH, COD_PER, TFJO, TIJO " +
+                                      " FROM VEH_PER WHERE COD_VEH IN " +
+                                              " (SELECT COD_VEH FROM MAE_VEH WHERE COD_ESC=" + ESCE + " ) "  +
+                                              " AND COD_PER IN (SELECT COD_PER FROM MAE_PER WHERE COD_ESC=" + ESCE + " )"
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_VEH"-->k,
+                              "COD_PER"-->t,
+                              "TFJO"-->TFJO(k,t),
+                              "TIJO"-->TIJO(k,t)
+            }
+            Comment: "Vehiculos Periodos";
+        }
+        DatabaseProcedure DB_NOD_NOD1_TIV {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_NOD, COD_NOD1, COD_TIV, CTRA " +
+                                       "FROM NOD_NOD1_TIV WHERE COD_NOD IN " +
+                                              " (SELECT COD_NOD  FROM MAE_NOD WHERE COD_ESC=" + ESCE + " ) " +
+                                              " AND  COD_NOD1 IN (SELECT COD_NOD  FROM MAE_NOD WHERE COD_ESC=" + ESCE + " ) "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_NOD"-->i,
+                              "COD_NOD1"-->j,
+                              "COD_TIV"-->v,
+                              "CTRA"-->CTRA(i,j,v)
+            }
+            Comment: "Nodos Nodos Tipo de Vehículos";
+        }
+        DatabaseProcedure DB_NOD_PRO_PER {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_NOD, COD_PRO, COD_PER, DEMA, INVS " +
+                                      " FROM NOD_PRO_PER WHERE COD_NOD IN " +
+                                              " (SELECT COD_NOD FROM MAE_NOD WHERE COD_ESC=" + ESCE + " ) " +
+                                              " AND COD_PER IN (SELECT COD_PER FROM MAE_PER WHERE COD_ESC=" + ESCE + " ) "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_NOD"-->i,
+                              "COD_PRO"-->m,
+                              "COD_PER"-->t,
+                              "DEMA"-->DEMA(i,m,t),
+                              "INVS"-->INVS(i,m,t)
+            }
+            Comment: "Nodos<-Productos-Periodos";
+        }
+        DatabaseProcedure DB_PRO_COM {
+            DataSource: "OACEDS";
+            SqlQuery: {
+                " SELECT COD_PRO, COD_COM, CCIV FROM PRO_COM " +
+                                      " WHERE COD_COM IN " +
+                                              " (SELECT   COD_COM " +
+                                                      " FROM COM_VEH WHERE COD_VEH IN " +
+                                                              " (SELECT COD_VEH FROM MAE_VEH WHERE COD_ESC=" + ESCE + " ) AND PCOV='1') "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_PRO"-->m,
+                              "COD_COM"-->l,
+                              "CCIV"-->CCIV(m,l)
+            }
+            Comment: "Nodos Productos Compartimientos";
+        }
+        DatabaseProcedure DB_ESCALARES {
+            DataSource: DATA_ESC;
+            SqlQuery: {
+                " SELECT COD_SCA,  VAL_ESC FROM ESCALARES WHERE COD_SCA='MBIN'  "
+                              !" SELECT COD_ESC, VAL_ESC FROM ESCALARES WHERE COD_ESC='MBIN' "
+            }
+            Property: UseResultSet;
+            Mapping: {
+                "COD_SCA"-->sc,
+                "VAL_ESC"-->VSCL(sc) ! REVISAR
+                
+                              !revisar esto, porque se modificó, la col ya no es MBIN, sino que es un dato de la Tabla
+            }
+        }
+    }
+    Section Lectura_DB {
+        Procedure LEER_TODO {
+            Body: {
+                !Aqui hago el for  para el parametro  String
+                !for s in ESC do
+                      !  ESCE:=ESCI(s); !Sobre escribe ESCE para  cada s. ESCE es el que esta en las consultas SQL
+                
+                        Read From Table DB_MAE_TIN;
+                        Read From Table DB_MAE_MAR;
+                        Read From Table DB_MAE_NOD;
+                        Read From Table DB_MAE_TIV;
+                        Read From Table DB_MAE_VEH;
+                        Read From Table DB_MAE_PER;
+                        Read From Table DB_MAE_PRO;
+                        Read From Table DB_MAE_COM;
+                        Read From Table DB_NOD_NOD1;
+                        Read From Table DB_TIV_VEH;
+                        Read From Table DB_NOD_PRO;
+                        Read From Table DB_NOD_PER;
+                        Read From Table DB_NOD_VEH;
+                        Read From Table DB_COM_VEH;
+                        Read From Table DB_VEH_PER;
+                        Read From Table DB_NOD_NOD1_TIV;
+                        Read From Table DB_NOD_PRO_PER;
+                        Read From Table DB_PRO_COM;
+                        Read From Table DB_ESCALARES;
+                !Casesaveas(ESC(s)) !Guardando el Caso como el valor dentro del elemento parámetro ESC
+                !Casecreate(Directorio_Escenarios,NOES)
+                !endfor;
+                !
+                CalculoConjuntos;
+                CalculoConectividadRed;
+            }
+        }
+        Procedure LEER_MAE_TIN {
+            Body: {
+                Read From Table DB_MAE_TIN;
+            }
+        }
+        Procedure LEER_MAE_MAR {
+            Body: {
+                Read From Table DB_MAE_MAR;
+            }
+        }
+        Procedure LEER_MAE_NOD {
+            Body: {
+                Read From Table DB_MAE_NOD;
+            }
+        }
+        Procedure LEER_MAE_TIV {
+            Body: {
+                Read From Table DB_MAE_TIV;
+            }
+        }
+        Procedure LEER_MAE_VEH {
+            Body: {
+                Read From Table DB_MAE_VEH;
+            }
+        }
+        Procedure LEER_MAE_PER {
+            Body: {
+                Read From Table DB_MAE_PER;
+            }
+        }
+        Procedure LEER_MAE_PRO {
+            Body: {
+                Read From Table DB_MAE_PRO;
+            }
+        }
+        Procedure LEER_MAE_COM {
+            Body: {
+                Read From Table DB_MAE_COM;
+            }
+        }
+        Procedure LEER_NOD_NOD1 {
+            Body: {
+                Read From Table DB_NOD_NOD1;
+            }
+        }
+        Procedure LEER_TIV_VEH {
+            Body: {
+                Read From Table DB_TIV_VEH;
+            }
+        }
+        Procedure LEER_NOD_PRO {
+            Body: {
+                Read From Table DB_NOD_PRO;
+            }
+        }
+        Procedure LEER_NOD_PER {
+            Body: {
+                Read From Table DB_NOD_PER;
+            }
+        }
+        Procedure LEER_NOD_VEH {
+            Body: {
+                Read From Table DB_NOD_VEH;
+            }
+        }
+        Procedure LEER_COM_VEH {
+            Body: {
+                Read From Table DB_COM_VEH;
+            }
+        }
+        Procedure LEER_VEH_PER {
+            Body: {
+                Read From Table DB_VEH_PER;
+            }
+        }
+        Procedure LEER_DB_NOD_NOD1_TIV {
+            Body: {
+                Read From Table DB_NOD_NOD1_TIV;
+            }
+        }
+        Procedure LEER_NOD_PRO_PER {
+            Body: {
+                Read From Table DB_NOD_PRO_PER;
+            }
+        }
+        Procedure LEER_NOD_PRO_COM_PER {
+            Body: {
+                Read From Table DB_PRO_COM;
+            }
+        }
+        Procedure LEER_ESCALARES {
+            Body: {
+                Read From Table DB_ESCALARES;
+            }
+        }
+    }
+    Section Elementos_Modelo_Matematico {
+        DeclarationSection Horizon_Declaration {
+            Horizon PHO {
+                SubsetOf: PERH;
+                Index: t;
+                CurrentPeriod: PINI;
+                IntervalLength: PEPA;
+                Definition: PERH;
+            }
+            Set PERH {
+                Text: "Periodos totales  para definir Horizonte con Bases de Datos";
+                Index: Peri;
+            }
+            ElementParameter PINI {
+                Text: "Periodo Inicial";
+                Range: PHO;
+                Definition: Element(PHO,2);
+            }
+            Set PEI {
+                SubsetOf: PHO;
+                Text: "Periodo Inicial";
+                Definition: Element(PHO,2);
+            }
+            Parameter PEPA {
+                Text: "Periodos de planificación";
+                Definition: CARD(PHO)-1;
+            }
+            Set PPR {
+                SubsetOf: PHO;
+                Text: "Periodos de Planificacion si el primer periodo";
+                Definition: PHO-PEI-element(PHO,1);
+            }
+            Set PEP {
+                SubsetOf: PHO;
+                Text: "Periodos de Planificacion";
+                Definition: {
+                    PHO.planning
+                    !PHO-element(PHO,1)
+                }
+            }
+        }
+        DeclarationSection Conjuntos_leidos {
+            Set NOD {
+                Text: "Nodos";
+                Index: i, j, jj, ii;
+            }
+            Set MAR {
+                Text: "Marcas de las EDS";
+            }
+            Set TIN {
+                Text: "Tipo de Nodod";
+                Index: tn;
+            }
+            StringParameter TNOD {
+                IndexDomain: (i);
+            }
+            Set NPA {
+                SubsetOf: NOD;
+                Text: "Nodos Planta de abastecimiento";
+                Definition: {
+                    {i in NOD| TNOD(i)="PLAOR" or TNOD(i)="PLAFI"} !NPA son PLAOR o PLAFI ( tener en cuenta para cuando se actualicen los datos)
+                }
+                Comment: "Este conjunto incluye las plantas dummy, para permitir recirculación";
+            }
+            Set NPO {
+                SubsetOf: NPA;
+                Text: "Nodos planta originales";
+                Definition: {
+                    {i in NOD| TNOD(i)="PLAOR"}
+                }
+            }
+            Set NPF {
+                SubsetOf: NPA;
+                Text: "Nodos plantas ficticias ";
+                Definition: {
+                    {i in NOD| TNOD(i)="PLAFI"}
+                    !Se debería leer de la base de datos
+                }
+                Comment: "Se usan en el procedimiento de validación Calculo_Reducc_Dom_PFICT";
+            }
+            Set NCL {
+                SubsetOf: NOD;
+                Text: "Nodos Clientes ";
+                Definition: {
+                    {i in NOD|TNOD(i)="CLIEN"}
+                }
+            }
+            Set NPE {
+                SubsetOf: NOD;
+                Text: "Nodos de Pernoctación";
+                Definition: {
+                    {i in NOD|TNOD(i)="PERNO"}
+                }
+            }
+            Set NOP {
+                SubsetOf: NOD;
+                Text: "Nodos orígenes potenciales";
+                Definition: {
+                    {i in NOD|TNOD(i)="ORIGE"}
+                }
+            }
+            Set VEH {
+                Text: "Vehículos";
+                Index: k, kk;
+            }
+            Set TVE {
+                Text: "Tipo de Vehículo";
+                Index: v;
+            }
+            Set VET {
+                IndexDomain: (v);
+                SubsetOf: VEH;
+                Text: "Tipo de Vehículo";
+                Definition: {
+                    {k in VEH|PVET(v,k)=1}
+                }
+            }
+            Parameter PVET {
+                IndexDomain: (v,k);
+                Text: "Parametro para definir el tipo de vehículo ";
+            }
+            Set PRO {
+                Text: "Productos";
+                Index: m;
+            }
+            Set COM {
+                Text: "Compartimientos";
+                Index: l;
+            }
+            Parameter PCON {
+                IndexDomain: (i,j);
+                Text: "Parametro de conectividad si i se conecta con j";
+            }
+            Set NVI {
+                IndexDomain: (i);
+                SubsetOf: NOD;
+                Text: "Nodos j que se pueden visitar desde i ";
+                Definition: {
+                    {j in NOD|PCON(i,j)=1}
+                }
+            }
+            Set NLL {
+                IndexDomain: (j);
+                SubsetOf: NOD;
+                Text: "Nodos que desde los cuales se puede llegar a j";
+                Definition: {
+                    {i in NOD|PCON(i,j)=1}
+                }
+            }
+            Parameter PCOV {
+                IndexDomain: (l,k);
+                Text: "indica si el compartmiento l es del vehículo k";
+            }
+            Set COV {
+                IndexDomain: (k);
+                SubsetOf: COM;
+                Text: "Compartimientos del vehículo k";
+                Definition: {
+                    {l in COM|PCOV(l,k)=1}
+                }
+            }
+            Parameter PPRC {
+                IndexDomain: (i,m);
+                Text: "Parámetro para definir si el producto es intercambiado con el nodo i";
+                Comment: "Este parametro también e puede automatizar desde un procedimiento ( Para todos los nodos excepto los de Pernoctación y Origenes Potenciales )";
+            }
+            Set PRC {
+                IndexDomain: (i);
+                SubsetOf: PRO;
+                Text: "Producto que puede ser intercambiado en nodo i";
+                Definition: {
+                    {m in PRO|PPRC(i,m)=1}
+                }
+            }
+            Parameter PNPV {
+                IndexDomain: (i,k);
+                Text: "Indica si el vehiculo k puede visitar el nodo i";
+            }
+            Set NPV {
+                IndexDomain: (k);
+                SubsetOf: NOD;
+                Text: "Nodos que se pueden visitar con vehículo k";
+                Definition: {
+                    {i in NOD|PNPV(i,k)=1}
+                }
+            }
+            Parameter PNOI {
+                IndexDomain: (i,k);
+                Text: "Indica si el vehiculo k está en el nodo i al iniciar la corrida";
+            }
+            Set NOI {
+                IndexDomain: (k);
+                SubsetOf: NOD;
+                Text: "Nodo Origen asociado al vehículo k";
+                Definition: {
+                    {i in NOD|PNOI(i,k)=1}
+                }
+            }
+            Parameter PNPP {
+                IndexDomain: (i,j);
+                Text: "Nodo potencial origen j asociado a un nodo de pernoctación i";
+            }
+            Set NPP {
+                IndexDomain: (i);
+                SubsetOf: NOD;
+                Text: "Nodo potencial origen asociado a un nodo de pernoctación";
+                Definition: {
+                    {j|PNPP(i,j)=1}
+                }
+            }
+            Set NNO {
+                IndexDomain: (j);
+                SubsetOf: NOD;
+                Text: "Nodo de pernoctacion asociado a nodo origen";
+                Definition: {
+                    {i|PNPP(i,j)=1}
+                }
+            }
+        }
+        DeclarationSection Conjuntos_Calculados {
+            Set NIT {
+                SubsetOf: NOD;
+                Text: "Nodos intermedios (Plantas de abastecimiento y Clientes)";
+                Definition: NPA+NCL;
+                Comment: "Son nodos que en la ruta de cada día se visitan en la mitad de la ruta, nunca en un extremo de la ruta";
+            }
+            Set NVV {
+                IndexDomain: (i,k);
+                SubsetOf: NOD;
+                Text: "Nodos que se pueden visitar con k desde i";
+                Definition: NPV(k) * NVI(i);
+            }
+            Set NLV {
+                IndexDomain: (i,k);
+                SubsetOf: NOD;
+                Text: "Nodos a los cuales se puede llegar a i con k";
+                Definition: NPV(k)*NLL(i);
+            }
+            Parameter PNOC {
+                IndexDomain: (i,l);
+                Text: "Indica si el compartimiento l puede visitar el nodo i";
+            }
+            Set NCO {
+                IndexDomain: (l);
+                SubsetOf: NOD;
+                Text: "Nodos que pueden ser visitados por un compartimiento";
+                Definition: {
+                    {i| PNOC(i,l)=1}
+                }
+            }
+            Set CNO {
+                IndexDomain: (i);
+                SubsetOf: COM;
+                Text: "Compartimientos que pueden visitar al nodo i";
+                Definition: {
+                    {l | PNOC(i,l)=1}
+                }
+            }
+            Set NIL {
+                IndexDomain: (l);
+                SubsetOf: NOD;
+                Text: "Nodos en los cuales se puede intercambiar producto y pueden ser visitados por el compartimiento l";
+                Definition: NIT * NCO(l);
+            }
+            Set NCC {
+                IndexDomain: (l);
+                SubsetOf: NOD;
+                Text: "Nodos clientes que pueden ser visitados por el compartimiento l";
+                Definition: NCL * NCO(l);
+            }
+            Set NPL {
+                IndexDomain: (l);
+                SubsetOf: NOD;
+                Text: "Nodos plantas que pueden ser visitados por el compartimiento l";
+                Definition: NPA*NCO(l);
+            }
+            Set NNL {
+                IndexDomain: (l);
+                SubsetOf: NOD;
+                Text: "Nodos de pernoctacion que pueden ser visitados por el compartimiento l";
+                Definition: NCO(l)*NPE;
+            }
+            Set NOL {
+                IndexDomain: (l);
+                SubsetOf: NOD;
+                Text: "Nodos de origen que pueden ser visitados por el compartimiento l";
+                Definition: NCO(l)*NOP;
+            }
+            Set NPK {
+                IndexDomain: (k);
+                SubsetOf: NOD;
+                Text: "Nodos planta que pueden ser visitados por el vehículo k";
+                Definition: NPA*NPV(k);
+            }
+            Set NIK {
+                IndexDomain: (k);
+                SubsetOf: NOD;
+                Text: "Nodos que pueden ser visitados por k y se puede intercambiar producto";
+                Definition: NIT*NPV(k);
+            }
+            Set NCK {
+                IndexDomain: (k);
+                SubsetOf: NOD;
+                Text: "Nodos cliente que pueden ser visitados por k";
+                Definition: NCL*NPV(k);
+            }
+            Set NOK {
+                IndexDomain: (k);
+                SubsetOf: NOD;
+                Text: "Nodos orígenes potenciales que pueden ser visitados por k";
+                Definition: NOP*NPV(k);
+            }
+            Set NNK {
+                IndexDomain: (k);
+                SubsetOf: NOD;
+                Text: "Nodos potenciales de pernoctacion del vehiculo k";
+                Definition: NPE*NPV(k);
+            }
+            Set SCA {
+                Text: "Escalares (conjunto de escalares usado en la lectura de datos)";
+                Index: sc;
+            }
+            Parameter PVDK {
+                IndexDomain: (k,kk);
+                Text: "Indica si el vehiculo kk se debe utilizar después de haber utilizado el vehiculo k";
+            }
+            Set VDK {
+                IndexDomain: k;
+                SubsetOf: VEH;
+                Text: "Vehiculo kk del mismo tipo de k que se debe usar despues de k";
+                Definition: {
+                    {kk in VEH|PVDK(k,kk)=1}
+                }
+            }
+        }
+        DeclarationSection Parametros_Leidos {
+            Parameter DEMA {
+                IndexDomain: (i in NCL,m,t);
+                Text: "Demanda en el nodo cliente i, del producto m en el periodo t";
+            }
+            Parameter INVS {
+                IndexDomain: (i,m,t);
+                Text: "inventario de seguridad";
+            }
+            Parameter CAPS {
+                IndexDomain: (i,m);
+                Text: "Capacidad máxima en el nodo i, del producto m";
+            }
+            Parameter CALM {
+                IndexDomain: (i,m);
+                Text: "Costo de almacenamiento";
+            }
+            Parameter TIVI {
+                IndexDomain: (i,j);
+                Text: "Tiempo de recorrido en el tramo de ir de i a j";
+            }
+            Parameter CTRA {
+                IndexDomain: (i,j,v);
+                Text: "Costo del tramo de ir de i a j";
+            }
+            Parameter TMIN {
+                IndexDomain: (i,t);
+                Text: "Tiempo mínimo de llegada de un vehículo al nodo i en periodo t";
+            }
+            Parameter TMAX {
+                IndexDomain: (i,t);
+                Text: "Tiempo máximo de llegada de un vehículo al nodo i en periodo t";
+            }
+            Parameter TSER {
+                IndexDomain: (i,k);
+                Text: "Tiempo de servicio en el nodo i para vehículo k";
+            }
+            Parameter CACC {
+                IndexDomain: (l);
+                Text: "Capacidad máxima del compartimiento l";
+            }
+            Parameter CAPV {
+                IndexDomain: (k);
+                Text: "Capacidad en peso del vehículo k";
+            }
+            Parameter TFJO {
+                IndexDomain: (k,t);
+                Text: "Tiempo final de la jornada";
+            }
+            Parameter TIJO {
+                IndexDomain: (k,t);
+                Text: "Tiempo de inicio de la jornada del vehiculo en el periodo";
+            }
+            Parameter DENS {
+                IndexDomain: (m);
+                Text: "Densidad del producto m";
+            }
+            Parameter INVI {
+                IndexDomain: (i in NCL,m);
+                Text: "Inventario inicial por cliente y por producto";
+            }
+            Parameter CCIV {
+                IndexDomain: (m,l);
+                Text: "Inventario Inicial que tiene el vehículo en el compartimento ";
+            }
+            Parameter COUV {
+                IndexDomain: (k);
+                Text: "Costo de usar un vehiculo en un periodo";
+            }
+            Parameter CDUV {
+                IndexDomain: (v);
+                Text: "Costo de usar un vehículo en un día";
+            }
+            Parameter MBIN {
+                Text: "Numero un poco más grande que uno";
+                Definition: VSCL('MBIN');
+            }
+            Parameter DIST {
+                IndexDomain: (i,j);
+                Text: "Distancia del nodo i al nodo j";
+                Comment: "Esta se usa para realizar procedimientos en conectividad para reducir dominio";
+            }
+            Parameter VSCL {
+                IndexDomain: sc;
+                Text: "Valor del escalar sc";
+            }
+        }
+        DeclarationSection Parametros_Calculados {
+            Parameter MSVI {
+                IndexDomain: (i,j,k,t);
+                Text: "Número muy grande asociado a la restricción SVIS";
+                Definition: TMAX(i,t)+TIVI(i,j)+TSER(i,k)+MBIN-1;
+                Comment: "Este es el valor mas pequeño posible para MSVI, depedende de los parametros de la ecuacion SVIS y de los valores mas grandes que pueden tomar las variables";
+            }
+            Parameter MACV {
+                IndexDomain: (i,k);
+                Text: "Número muy grande asociado a la restricción subrogada  SRACV1";
+                Definition: [CARD(COV(k))*CARD(PRC(i))];
+                Comment: "Este es el valor mas pequeño posible para MSVI, depedende de los parametros de la ecuacion SVIS y de los valores mas grandes que pueden tomar las variables";
+            }
+            Parameter COGV {
+                IndexDomain: (v);
+                Text: "Costo Global de usar un tipo vehiculo ";
+                Definition: PEPA*CDUV(v);
+            }
+        }
+        Section Variables_Modelo {
+            DeclarationSection Variables_Asignacion {
+                Variable AVI {
+                    IndexDomain: (i,k,t)|(i in NPV(k));
+                    Text: "Asignación de visita al nodo i con k en t";
+                    Range: binary;
+                }
+                Variable APE {
+                    IndexDomain: (i,m,l,t)|(i in NIL(l) and m in PRC(i));
+                    Text: "Asignación producto m al compartimiento l en el nodo i en t";
+                    Range: binary;
+                    Definition: {
+                        !|(i in NFC and m in PRC(i))
+                    }
+                }
+                Variable AVE {
+                    IndexDomain: (k,t);
+                    Text: "Asignación de uso de vehículo k en t";
+                    Range: binary;
+                }
+                Variable AGV {
+                    IndexDomain: (k);
+                    Text: "Asignación Global de uso de Vehículo: Si se utiliza en  el Horizonte de plaificación.";
+                    Range: binary;
+                }
+                Variable ATR {
+                    IndexDomain: (i,j,k,t)|(i in NPV(k) and j in NVV(i,k));
+                    Text: "Asignación de tramo (si voy de i a j con k en t)";
+                    Range: binary;
+                    Comment: "(i,j,k,t)|(i in NPV(k) and j in NVV(i,k))";
+                }
+            }
+            DeclarationSection Variables_Cantidad {
+                Variable CCC {
+                    IndexDomain: (i,m,l,t)|(i in NIL(l) and m in PRC(i));
+                    Text: "Cantidad de producto m en el compartimiento l que se intercambia con nodo i en t";
+                    Range: nonnegative;
+                }
+                Variable INV {
+                    IndexDomain: (i,m,t)| (i in NCL and m in PRC(i));
+                    Text: "Inventario del cliente i del producto m en el tiempo t";
+                    Range: [INVS(i, m, t), CAPS(i, m)];
+                }
+                Variable CCV {
+                    IndexDomain: (i,m,l,t)| (i in NCO(l));
+                    Range: [0, CACC(l)];
+                    Comment: {
+                        "|(i in NSI(l) and m in PRC(i)) el producto no debe estar reducido,
+                        ya que un vehículo puede visitar una estación que no venda corriente y salir con corriente prque no la entrego."
+                    }
+                }
+            }
+            DeclarationSection Variables_Tiempo {
+                Variable TLL {
+                    IndexDomain: (i,k,t);
+                    Text: "Tiempo de llegada al nodo i con k en t";
+                    Range: [TMIN(i, t), TMAX(i, t)];
+                }
+            }
+        }
+        Section Restricciones {
+            DeclarationSection Restricciones_Cortes {
+                Constraint CCNV {
+                    IndexDomain: (i,m,l,k,t)|i in NNK(k) or i in NOK(k) and m in PRC(i) and l in COV(k);
+                    Text: "Corte cantidad en vehículo si no  se visita el nodo";
+                    Definition: CCV(i,m,l,t)<=CACC(l)*AVI(i,k,t);
+                    Comment: {
+                        "Si no se visita el nodo entonces el vehículo debe salir con cero de producto de ese nodo. Ojo pero la Restricción AVOO1 obliga
+                        a AVI a ser 1 en el nodo origen, lo cual evita que se restrinja CCV. porque satisface demnandas con CCV fiticias.
+                        Pra esto se debe crear otra restricción para hacer cero CCV en nodo origen periodo 1, ojo teniendo cuidado con el inventario inicial del vehículo"
+                    }
+                }
+            }
+            DeclarationSection Restricciones_Asignacion {
+                Constraint AUPC {
+                    IndexDomain: (i,l,t)|(i in NIL(l));
+                    Text: "Asignación único producto a compartimiento en nodo de intercambio";
+                    Definition: sum(m |m in PRO, APE(i,m,l,t))<=1;
+                    Comment: {
+                        "A un compartimiento se le asigna un único producto.
+                        !sum((i in NCL, m in PRO), APE(i,m,l,t))<=1"
+                    }
+                }
+                Constraint APCL {
+                    IndexDomain: (j,m,l,t)| (j in NCC(l) and m in PRC(j));
+                    Text: "Asignación completa de un producto en un compartimiento a un cliente";
+                    Definition: CCV(j,m,l,t)<=CACC(l)*(1-APE(j,m,l,t));
+                    Comment: {
+                        "si salé del nodo cliente j el vehículo queda con cero cantidad
+                        CCV(j,m,l,t)=0 si APE(j,m,l,t)=1"
+                    }
+                }
+            }
+            DeclarationSection Restricciones_Capacidad {
+                Constraint CPPE {
+                    IndexDomain: (i,m,t)|(i in NCL and m in PRC(i));
+                    Text: "Cantidad permitida de producto entregado";
+                    Definition: {
+                        sum(l|l in CNO(i), CCC(i,m,l,t))<=CAPS(i,m)-INV(i,m,t-1)
+                        !Esta restricción es problemática para las EDS de alto consumo. Si CAPS =12000, y la EDS Consume 10000
+                        !INVS =2000
+                        !Se debe tratar de una manera diferente, pensarlo! Puede pensarse otro modelo de optimización solo para este tipo de EDS
+                        ! esto quedaría como Heurística
+                    }
+                    Comment: {
+                        "No es posible entregar al cliente  una cantidad que al juntarla
+                        con el inventario que tiene el cliente supere su capacidad."
+                    }
+                }
+                Constraint CAPP {
+                    IndexDomain: (i,k,t)|(i in NPK(k));
+                    Text: "Capacidad en peso del vehículo";
+                    Definition: {
+                        !sum((m in PRO, l in COV(K)), DENS(m)* CCV(i,m,l,t))<=CAPV(k)
+                        sum((m,l)|l in COV(k), DENS(m)* CCV(i,m,l,t))<=CAPV(k)
+                    }
+                    Comment: {
+                        "Un vehículo puede cargar tanta cantidad de combustible como su capacidad en peso lo permita.
+                        !sum((i in NCL, m, l in COV(k)), DENS(m)*CCC(i,m,l,t))<=CAPV(k)"
+                    }
+                }
+            }
+            DeclarationSection Restricciones_Relacion {
+                Constraint RACV1 {
+                    IndexDomain: (i,m,k,l,t)|(i in NIL(l) and l in COV(k) and m in PRC(i));
+                    Text: "Relación - asignación producto compartimiento -> visita cliente";
+                    Definition: APE(i,m,l,t)<= AVI(i,k,t);
+                    Comment: {
+                        "Si al menos un compartimiento es asignado a un cliente ->
+                        El vehículo del compartimiento debe visitar el cliente."
+                    }
+                }
+                Constraint SRACV1 {
+                    IndexDomain: (i,k,t)|(i in NIK(k));
+                    Text: "Restricción Subrogada Relación - asignación producto compartimiento -> visita cliente";
+                    Definition: {
+                        Sum((l,m)|(l in COV(k) and m in PRC(i)),APE(i,m,l,t))<=MACV(i,k)*AVI(i,k,t)
+                        
+                        
+                        !APE(i,m,l,t)<= AVI(i,k,t)
+                        
+                        
+                        ! yo considero que se puede hacer una Suma sobre l y sobre m de una vez.   Y se reduciría el dominio de la restricción
+                    }
+                    Comment: {
+                        "Si al menos un compartimiento es asignado a un cliente ->
+                        El vehículo del compartimiento debe visitar el cliente."
+                    }
+                }
+                Constraint RACV2 {
+                    IndexDomain: (i,k,t)|(i in NIK(k));
+                    Text: "Relación visita nodo de intercambio -> asignación producto compartimiento";
+                    Definition: sum((m,l)|l in COV(k), APE(i,m,l,t))>=AVI(i,k,t);
+                    Comment: "Si un vehículo atiende un cliente -> Al menos un compartimiento del vehículo es asignado para atender el cliente";
+                }
+                Constraint RVIN {
+                    IndexDomain: (i,m,k,t)|(i in NCK(k));
+                    Text: "Si visito nodo cliente entonces se puede intercambiar producto";
+                    Definition: sum(l in COV(k), CCC(i,m,l,t))<=CAPS(i,m)*AVI(i,k,t);
+                    Comment: {
+                        "!las plantas de abastecimiento no se incluyen en esta restriccion
+                        !este corte se podría validar (con las plantas)"
+                    }
+                }
+                Constraint RCPA1 {
+                    IndexDomain: (i,m,l,t)|(i in NIL(l));
+                    Text: "Relación cantidad de producto - asignación compartimiento";
+                    Definition: CCC(i,m,l,t)<=CACC(l)*APE(i,m,l,t);
+                    Comment: "Si en un compartimiento hay producto entonces el producto fue asignado al compartimiento";
+                }
+                Constraint RCPA2 {
+                    IndexDomain: (i,m,l,t)|(i in NIL(l));
+                    Text: "Relación asignación compartimiento - cantidad de producto";
+                    Definition: CCC(i,m,l,t)>=APE(i,m,l,t);
+                    Comment: {
+                        "Ojo con esta restriccion que depende de las
+                        dimensiones de los parametros
+                        Si en un compartimiento fue asignado un producto entonces el compartimiento tiene producto"
+                    }
+                }
+                Constraint RAGV {
+                    IndexDomain: (k,t);
+                    Text: "Restricción Asignación global de un vehículo en el horizonte  de Planicación:Si lo uso en un periodo, entonces se usa en el horizonte.";
+                    Definition: AVE(k,t)<=AGV(k);
+                    Comment: "Esta restricción se  debe a  analizar respecto a la restricción Subrogada. Analizar si realmente es mejor.";
+                }
+                Constraint SRAGV {
+                    IndexDomain: (k);
+                    Text: "Restricción Subrogada Asignación global de un vehículo en el horizonte  de Planiicación:Si lo uso en un periodo, entonces se usa en el horizonte.";
+                    Definition: sum(t, AVE(k,t))<=PEPA*AGV(k);
+                }
+            }
+            DeclarationSection Restricciones_Flujo_Producto {
+                Constraint BALI {
+                    IndexDomain: (i,m,t)|(i in NCL and m in PRC(i));
+                    Text: "Balance de inventarios";
+                    Definition: INV(i,m,t)=INV(i,m,t-1)+sum(l in CNO(i), CCC(i,m,l,t))-DEMA(i,m,t);
+                    Comment: {
+                        "El inventario final del periodo  t  debe ser igual a lo que sobró al final del periodo anterior,
+                        más la cantidad de producto que  se entrega en periodo a ese nodo, menos la demanda en ese periodo."
+                    }
+                }
+                Constraint BAVI {
+                    IndexDomain: (j,m,l,t) |j in NPL(l);
+                    Text: "Cargue en la planta de abastecimiento ";
+                    Definition: CCV(j,m,l,t)=CCC(j,m,l,t);
+                }
+                Constraint BAVC1 {
+                    IndexDomain: (j,k,i,m,l,t)|(j in NCK(k) and i in NLV(j,k) and l in COV(k));
+                    Text: "Balance de inventarios para los vehículos después de salir de un cliente (1)";
+                    Definition: CCV(j,m,l,t)<=CCV(i,m,l,t)-CCC(j,m,l,t)-CACC(l)*(ATR(i,j,k,t)- 1);
+                }
+                Constraint BAVC2 {
+                    IndexDomain: (j,k,i,m,l,t)|(j in NCK(k) and i in NLV(j,k) and l in COV(k));
+                    Text: "Balance de inventarios para los vehículos después de salir de un cliente (2)";
+                    Definition: CCV(j,m,l,t)>=CCV(i,m,l,t)-CCC(j,m,l,t)+CACC(l)*(ATR(i,j,k,t)- 1);
+                }
+                Constraint BAVO {
+                    IndexDomain: (i,j,m,l,t)| i in NNL(l) and j in NPP(i);
+                    Text: "Con lo que llegué a dormir con eso salí";
+                    Definition: CCV(j,m,l,t)=CCV(i,m,l,t-1);
+                    Comment: {
+                        "j se refiere a un nodo origen
+                        i se refiere a un nodo de pernoctacion"
+                    }
+                }
+                Constraint BAVP1 {
+                    IndexDomain: (j,i,l,m,k,t)|(j in NNK(k) and i in NLV(j,k) and l in COV(k));
+                    Text: "Balance de inventario en vehículo después de  nodo de pernoctación.";
+                    Definition: {
+                        CCV(j,m,l,t)<=CCV(i,m,l,t)-CACC(l)*(ATR(i,j,k,t)-1)
+                        !ojo index domain estaba mal en power point, verificar, faltaba la m, la l
+                    }
+                    Comment: {
+                        "Con lo que salgo del Nodo de Pernoctación es la misma cantidad que con lo que llego,
+                        Si fui desde i a j."
+                    }
+                }
+                Constraint BAVP2 {
+                    IndexDomain: (j,i,l,m,k,t)|(j in NNK(k) and i in NLV(j,k) and l in COV(k));
+                    Text: "Balance de inventario en vehículo después de  nodo de pernoctación.";
+                    Definition: {
+                        CCV(j,m,l,t)>=CCV(i,m,l,t)+CACC(l)*(ATR(i,j,k,t)-1)
+                        !ojo index domain estaba mal en power point, verificar, faltaba la m, la l
+                    }
+                    Comment: "OJO falta especificar bien el dominio y los conjuntos donde tiene el DOminio, NLL, NPE?? Crearlos";
+                }
+                Constraint BAVD1 {
+                    IndexDomain: (i,j,l,m,k,t)|(j in NOK(k) and i in NNO(j) and l in COV(k));
+                    Text: "Balance de inventario en vehículo cuando descansa en un periodo";
+                    Definition: CCV(i,m,l,t)>=CCV(j,m,l,t)-CACC(l)*AVE(k,t);
+                }
+                Constraint BAVD2 {
+                    IndexDomain: (i,j,l,m,k,t)|(j in NOK(k) and i in NNO(j) and l in COV(k));
+                    Text: "Balance de inventario en vehículo cuando descansa en un periodo";
+                    Definition: CCV(i,m,l,t)<=CCV(j,m,l,t)+CACC(l)*AVE(k,t);
+                }
+            }
+            DeclarationSection Restricciones_Flujo_Vehiculo {
+                Constraint SNOR1 {
+                    IndexDomain: (i,k,t)|(i in NOI(k) and t in PEI);
+                    Text: "Salida del origen en periodo inicial";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))= AVE(k,t);
+                }
+                Constraint AVOO1 {
+                    IndexDomain: (i,k,t)|(i in NOI(k) and t in PEI);
+                    Text: "Asignacion de visita obligatoria a nodo origen";
+                    Definition: AVI(i,k,t)=1;
+                }
+                Constraint SNOR2 {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))<=AVE(k,t);
+                    Comment: "Si no utilizo el vehículo no debo salir del nodo origen del periodo";
+                }
+                Constraint SNOR3 {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))>=AVI(i,k,t)-MBIN*(1-AVE(k,t));
+                    Comment: "Si utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo";
+                }
+                Constraint SNOR4 {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))<=AVI(i,k,t)+MBIN*(1-AVE(k,t));
+                    Comment: "i utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo";
+                }
+                Constraint AVOO2 {
+                    IndexDomain: (k,t);
+                    Text: "Asignacion visita unica y obligatoria a nodo inicial";
+                    Definition: sum(i in NOK(k), AVI(i,k,t))=1;
+                    Comment: "Solo se puede salir de un nodo origen potencial una vez";
+                }
+                Constraint RVSA {
+                    IndexDomain: (i,k,t)|(i in NIK(k));
+                    Text: "Relacion visita nodo inicial - salida de nodo por algun tramo";
+                    Definition: {
+                        AVI(i,k,t)=sum(j in NVV(i,k), ATR(i,j,k,t))
+                        !esta restriccion se debe eliminar, si visito a un nodo inicial no necesariamente debo salir de el.
+                        !Puede que tenga que quedarme descansando todo el día allí
+                    }
+                    Comment: "Si visita el cliente entonces se debe salir del cliente por algun tramo";
+                }
+                Constraint ENSA {
+                    IndexDomain: (i,k,t) | (i in NIK(k));
+                    Text: "Entrada Salida del Nodo";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t)) + sum(j in NLV(i,k), ATR(j,i,k,t)) = 2 *AVI(i,k,t);
+                    Comment: {
+                        "Establece que para cada nodo que se visite, se debe entrar y salir de este
+                        Con RVSA y RVLL esta restriccion ya se incluye, pero al parecer es un corte. Se corrió con esta y sin esta y se demor 1 seg menos cuando se agregó."
+                    }
+                }
+                Constraint RVLL {
+                    IndexDomain: (j,k,t)|(j in NIK(k));
+                    Text: "Relacion visita nodo - llegada de nodo por algun tramo";
+                    Definition: AVI(j,k,t)=sum(i in NLV(j,k), ATR(i,j,k,t));
+                }
+                Constraint LNPE1 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Text: "Llegada al nodo de pernoctacion";
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))<=AVE(k,t);
+                    Comment: "Si no utilizo el vehiculo en el periodo no llego al nodo de pernoctacion";
+                }
+                Constraint LNPE2 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Text: "Llegada al nodo de pernoctacion";
+                    Definition: {
+                        1=1!sum(i in NLV(j,k), ATR(i,j,k,t))>=-AVE(k,t)
+                        !Sobra esta restricción
+                    }
+                    Comment: "Si no utilizo el vehiculo en el periodo no llego al nodo de pernoctacion";
+                }
+                Constraint LNPE3 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Text: "Llegada al nodo de pernoctacion";
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))<=AVI(j,k,t)+MBIN*(1-AVE(k,t));
+                    Comment: "Todo vehículo que se utilice debe llegar a algun nodo de pernoctacion en un periodo";
+                }
+                Constraint LNPE4 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Text: "Llegada al nodo de pernoctacion";
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))>=AVI(j,k,t)-MBIN*(1-AVE(k,t));
+                    Comment: "Todo vehículo que se utilice debe llegar a algun nodo de pernoctacion en un periodo";
+                }
+                Constraint AVOP {
+                    IndexDomain: (k,t);
+                    Text: "Asignacion de visita obligatoria y unica a nodo de pernoctacion";
+                    Definition: sum(j in NNK(k), AVI(j,k,t))=1;
+                    Comment: "Solo se puede visitar un nodo de pernoctacion y es obligatorio en cada periodo";
+                }
+                Constraint DECP {
+                    IndexDomain: (i,j,k,t)|i in NNK(k) and  j in NPP(i);
+                    Text: "Conservacion de posicion en descanso de cambio de periodo";
+                    Definition: AVI(i,k,t-1)=AVI(j,k,t);
+                    Comment: "Si paso la noche en un nodo de pernoctacion al siguiente periodo empiezo en el nodo origen asociado a dicho nodo de pernoctacion";
+                }
+                Constraint DEMP1 {
+                    IndexDomain: (i,j,k,t)|i in NNK(k) and  j in NPP(i);
+                    Text: "Conservacion de posicion en descanso del mismo periodo";
+                    Definition: AVI(j,k,t)<=AVI(i,k,t)+MBIN*(AVE(k,t));
+                    Comment: {
+                        "Funciona con DESC2 para generar la igualdad dado  lo siguiente: Si AVE(k,t)=0 ->
+                        AVI(j,k,t)=AVI(i,k,t)
+                        Si el Vehículo descansa, no se mueve"
+                    }
+                }
+                Constraint DEMP2 {
+                    IndexDomain: (i,j,k,t)|i in NNK(k) and  j in NPP(i);
+                    Text: "Conservacion de posicion en descanso del mismo periodo";
+                    Definition: AVI(j,k,t)>=AVI(i,k,t)-MBIN*(AVE(k,t));
+                    Comment: {
+                        "Funciona con DESC2 para generar la igualdad dado  lo siguiente: Si AVE(k,t)=0 ->
+                        AVI(j,k,t)=AVI(i,k,t)
+                        Si no utilizo el vehiculo en un periodo, el vehículo se queda en el nodo de pernoctación asociado al respectivo
+                        nodo origen"
+                    }
+                }
+            }
+            DeclarationSection Restricciones_Flujo_Vehiculo_VRP {
+                Constraint VRP_SNOR1 {
+                    IndexDomain: (i,k,t)|(i in NOI(k) and t in PEI);
+                    Text: "Salida del origen en periodo inicial para Progrma Simpliificado VRP";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t)) = 1;
+                    Comment: "Nota: recuerde que SNOR2 no se tendrá en cuenta al hacer el conjunto de restricciones de este modelo matemático";
+                }
+                Constraint VRP_SNOR3y4 {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial  para Progrma Simpliificado VRP";
+                    Definition: {
+                        sum(j in NVV(i,k), ATR(i,j,k,t))=AVI(i,k,t)
+                        
+                        !Ojo los tramos de Nodos origenes-Nodos Finales o pernoct, deben  tener costo cero, pero también se debe tener
+                        !cuidado con los casos en los que es necesario salir de un nodo origen e ir a pernoctar  debido a la larga distanca
+                        !de su próximo destino, en este último caso se debe cuidar de no poner en cero el costo del tramo porque vehículos a ser
+                        ! usados tendran que cruzar este tramo.
+                    }
+                }
+                Constraint VRP_LNPE3y4 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))=AVI(j,k,t);
+                }
+            }
+            DeclarationSection Restricciones_Tiempo {
+                Constraint SVIS {
+                    IndexDomain: (i,k,j,t)|(i in NPV(k) and j in NVV(i,k));
+                    Text: "Secuencia de visitas";
+                    Definition: TLL(i,k,t) + TIVI(i,j) + TSER(i,k) + MSVI(i,j,k,t)*(ATR(i,j,k,t)-1) <= TLL(j,k,t);
+                    Comment: {
+                        "Hora de llegada a i con k más el tiempo de viaje de i a j debe ser menor igual que el tiempo de llegada a j,
+                        si voy de i a j. Si no voy de i a j el lado izquierdo será negativo y por lo tanto menor que una variable positiva."
+                    }
+                }
+                Constraint DTFJ {
+                    IndexDomain: (i,k, t)| (i in NNK(k));
+                    Text: "Definición del tiempo final de la jornada";
+                    Definition: TLL(i,k,t)<= TFJO(k,t);
+                    Comment: "El tiempo de llegada a cualquier nodo i con el vehículo k debe ser menor al tiempo en que termina la jornada en ese periodo.";
+                }
+                Constraint DTIJ {
+                    IndexDomain: (i,k,t)| (i in NOK(k));
+                    Text: "Definicion tiempo inicio de la jornada";
+                    Definition: TLL(i,k,t)>=TIJO(k,t);
+                }
+            }
+            DeclarationSection Restricciones_Evitar_Degeneracion {
+                Constraint EDUV {
+                    IndexDomain: (k,kk,t)| kk in VDK(k);
+                    Text: "Asignacion de uso de vehiculo por prioridad";
+                    Definition: AVE(k,t)>=AVE(kk,t);
+                    Comment: "Evita la degeneración por uso de vehiculos del mismo tipo";
+                }
+            }
+        }
+        DeclarationSection Funcion_Objetivo {
+            Variable MCO_CUV {
+                Range: free;
+                Definition: {
+                    Sum ((i, m in PRC(i), t),CALM(i,m)*INV(i,m,t))+ sum((k,t),COUV(k)*AVE(k,t))+Sum((v, k in VET(v), i in NPV(k),j in NVV(i,k),t),CTRA(i,j,v)*ATR(i,j,k,t))
+                    +sum((v,k in VET(v)),COGV(v)*AGV(k))
+                    
+                    !! Antes
+                    !Sum ((i, m in PRC(i), t),CALM(i,m)*INV(i,m,t))+Sum((k,i in NPV(k),j in NVV(i,k),t),CTRA(i,j,k)*ATR(i,j,k,t))+sum((k,t),COUV(k)*AVE(k,t))
+                }
+                Comment: "Sum ((i, m in PRC(i), t),CALM(i,m)*INV(i,m,t))+Sum((i,j,k,t),CTRA(i,j)*ATR(i,j,k,t))+sum((k,t),COUV(k)*AVE(k,t))";
+            }
+            Variable MCO_SUV {
+                Range: free;
+                Definition: Sum ((i, m in PRC(i), t),CALM(i,m)*INV(i,m,t))+Sum((v, k in VET(v), i in NPV(k),j in NVV(i,k),t),CTRA(i,j,v)*ATR(i,j,k,t));
+            }
+            Parameter WTIE {
+                Text: "Peso del tiempo en la FO";
+                Definition: 1;
+            }
+            Variable MCO_CUV_PDT {
+                Text: "Minimizar los costos variables + fijos por uso de vehiculo + % suma tiempos de llegada";
+                Range: free;
+                Definition: MCO_CUV+WTIE*FOT;
+                Comment: "MCO_CUV+%PERTURBACIÓN PARA EVITAR LA DEGENERACIÓN POR LAS VARIABLES DE TIEMPO";
+            }
+            Variable MCO_SUV_PDT {
+                Text: "Minimizar los costos variables + % suma tiempos de llegada";
+                Range: free;
+                Definition: MCO_SUV+WTIE*FOT;
+            }
+            Variable MCO_GENERICO {
+                Range: free;
+            }
+            StringParameter MCO_DEFINITION;
+        }
+        DeclarationSection Problemas_Matematicos {
+            Set RES_CUV {
+                SubsetOf: AllConstraints;
+                Definition: {
+                    data
+                        { APE  , CCNV , AUPC , APCL , CPPE , CAPP , RACV1, RACV2, RVIN , RCPA1, RCPA2, RAGV , BALI , BAVI , BAVC1, BAVC2, BAVO , BAVP1,
+                          BAVP2, BAVD1, BAVD2, SNOR1, AVOO1, SNOR2, SNOR3, SNOR4, AVOO2, RVSA , ENSA , RVLL , LNPE1, LNPE2, LNPE3, LNPE4, AVOP , DECP ,
+                          DEMP1, DEMP2, SVIS , DTFJ , DTIJ , MCO_CUV  }
+                }
+            }
+            Set VAR_CUV {
+                SubsetOf: AllVariables;
+                Definition: data { AVI, APE, AVE, AGV, ATR, CCC, INV, CCV, TLL, MCO_CUV };
+            }
+            MathematicalProgram MCDP_CUV {
+                Objective: MCO_CUV;
+                Direction: minimize;
+                Constraints: RES_CUV;
+                Variables: VAR_CUV;
+                Type: Automatic;
+                Comment: "Incluye las restricciones para decidir si un vehiculo es usado o no";
+            }
+            Set RES_CUV_PDT {
+                SubsetOf: AllConstraints;
+                Definition: {
+                    data
+                        { APE  , CCNV , AUPC , APCL , CPPE , CAPP , RACV1, RACV2, RVIN , RCPA1, RCPA2, RAGV , BALI , BAVI , BAVC1, BAVC2, BAVO , BAVP1,
+                          BAVP2, BAVD1, BAVD2, SNOR1, AVOO1, SNOR2, SNOR3, SNOR4, AVOO2, RVSA , ENSA , RVLL , LNPE1, LNPE2, LNPE3, LNPE4, AVOP , DECP ,
+                          DEMP1, DEMP2, SVIS , DTFJ , DTIJ , MCO_CUV, MCO_CUV_PDT, FOT   }
+                }
+            }
+            Set VAR_CUV_PDT {
+                SubsetOf: AllVariables;
+                Definition: data { AVI, APE, AVE, AGV, ATR, CCC, INV, CCV, TLL, MCO_CUV, MCO_CUV_PDT, FOT };
+            }
+            MathematicalProgram MCDP_CUV_PDT {
+                Objective: MCO_CUV_PDT;
+                Direction: minimize;
+                Constraints: RES_CUV_PDT;
+                Variables: VAR_CUV_PDT;
+                Type: Automatic;
+                Comment: {
+                    "Incluye las restricciones para decidir si un vehiculo es usado o no
+                    Incluye en la FO la perturbación para evitar el degeneramiento por las variables de tiempo"
+                }
+            }
+            Set RES_SUV {
+                SubsetOf: AllConstraints;
+                Definition: {
+                    data
+                        { CCNV       , AUPC       , APCL       , CPPE       , CAPP         , SRACV1     , RACV2      , RVIN       ,
+                          RCPA1      , RCPA2      , BALI       , BAVI       , BAVC1      , BAVC2      , BAVO       , BAVP1      , BAVP2      ,
+                          AVOO1      , AVOO2      , RVSA       , ENSA       , RVLL       , AVOP       , DECP       , VRP_SNOR1  , VRP_SNOR3y4,
+                          VRP_LNPE3y4, SVIS       , DTFJ       , DTIJ      , MCO_SUV    }
+                }
+            }
+            Set VAR_SUV {
+                SubsetOf: AllVariables;
+                Definition: data { AVI, APE, ATR, CCC, INV, CCV, TLL, MCO_SUV };
+            }
+            MathematicalProgram MCDP_SUV {
+                Objective: MCO_SUV;
+                Direction: minimize;
+                Constraints: RES_SUV;
+                Variables: VAR_SUV;
+                Type: MIP;
+                Comment: "No Incluye las restricciones para decidir si un vehiculo es usado o no";
+            }
+            Set RES_SUV_PDT {
+                SubsetOf: AllConstraints;
+                Definition: {
+                    data
+                        { CCNV       , AUPC       , APCL       , CPPE       , CAPP         , SRACV1     , RACV2      , RVIN       ,
+                          RCPA1      , RCPA2      , BALI       , BAVI       , BAVC1      , BAVC2      , BAVO       , BAVP1      , BAVP2      ,
+                          AVOO1      , AVOO2      , RVSA       , ENSA       , RVLL       , AVOP       , DECP       , VRP_SNOR1  , VRP_SNOR3y4,
+                          VRP_LNPE3y4, SVIS       , DTFJ       , DTIJ      , MCO_SUV , MCO_SUV , FOT   }
+                }
+            }
+            Set VAR_SUV_PDT {
+                SubsetOf: AllVariables;
+                Definition: data { AVI, APE, ATR, CCC, INV, CCV, TLL, MCO_SUV, MCO_SUV , FOT };
+            }
+            MathematicalProgram MCDP_SUV_PDT {
+                Objective: MCO_SUV_PDT;
+                Direction: minimize;
+                Constraints: RES_SUV_PDT;
+                Variables: VAR_SUV_PDT;
+                Type: Automatic;
+                Comment: "No Incluye las restricciones para decidir si un vehiculo es usado o no";
+            }
+            MathematicalProgram MCDP_GENERICO {
+                Objective: MCO_GENERICO;
+                Direction: minimize;
+                Constraints: RES_GENERICO;
+                Variables: VAR_GENERICO;
+                Type: Automatic;
+            }
+            Set RES_GENERICO {
+                SubsetOf: AllConstraints;
+            }
+            Set VAR_GENERICO {
+                SubsetOf: AllVariables;
+            }
+            ElementParameter MCO_EP {
+                Range: AllIdentifiers;
+                Definition: {
+                    'MCO_CUV' ;
+                }
+            }
+            ElementParameter DEFINITIO_EP {
+                Range: AllAttributeNames;
+                Definition: {
+                    'definition' ;
+                }
+            }
+        }
+    }
+    Section Modelo_Tiempos_de_Llegada {
+        DeclarationSection Funcion_Objetivo2 {
+            Variable FOT {
+                Text: "Sumatoria de los tiempos de llegada";
+                Range: free;
+                Definition: sum((i in NOD,k in VEH,t), TLL(i,k,t));
+            }
+        }
+        DeclarationSection PGUA {
+            Parameter PATR {
+                IndexDomain: (i,j,k,t);
+            }
+        }
+        DeclarationSection Modelo_Matematico_MT {
+            Set CREST {
+                SubsetOf: AllConstraints;
+            }
+            Set CVAR {
+                SubsetOf: AllVariables;
+            }
+            MathematicalProgram FTLL {
+                Objective: FOT;
+                Direction: minimize;
+                Constraints: CREST;
+                Variables: CVAR;
+                Type: LP;
+            }
+        }
+        Procedure Tllegadas {
+            Body: {
+                empty PATR;
+                PATR(i,j,k,t):=ATR(i,j,k,t);
+                ATR(i,j,k,t):=PATR(i,j,k,t);
+                solve FTLL;
+                TimeProcess;
+            }
+        }
+    }
+    Section Procesamiento_de_Datos {
+        Procedure CalculoConjuntos {
+            Body: {
+                EMPTY  PNOC;
+                for (i, k, l)| l in COV(k)  do
+                        if PNPV(i,k) = 1 and PCOV(l,k)=1 then
+                                PNOC(i,l):=1;
+                        Else
+                                PNOC(i,l):=0;
+                        endif;
+                endfor;
+                
+                empty PVDK;
+                
+                for v| v in TVE do
+                	for k in VET(v) do
+                		PVDK(k,k+1):=1
+                
+                	endfor
+                
+                endfor;
+            }
+        }
+        Procedure CalculoConectividadRed {
+            Body: {
+                PCON(i,j):=0;
+                for (i,j) do
+                        !Definicion PNVI cuando se prohibe el moviemiento por el tramo NOP-NPE
+                        !De un NOP se puede ir a un NPA o NCL, no se puede ir a un NPE.
+                !        if i in NOP and (j in (NPA or NCL)) then
+                !                PCON(i,j):=1
+                !        endif;
+                ! Conectividad NOP con NPE para Modelo VRP
+                        if i in NOP and (j in (NPA or NCL or NPE)) then
+                                PCON(i,j):=1
+                        endif;
+                
+                
+                        !De un NPA no se puede ir a otro NPA, solo se puede ir a un NPE o NCL
+                        if i in NPA and (j in (NCL or NPE)) then
+                                PCON(i,j):=1
+                        endif;
+                        !De un NCL se puede ir a otro NCL, NPA o NPE
+                        if i in NCL and (j in (NCL or NPA or NPE)) and i<>j then
+                                PCON(i,j):=1
+                        endif;
+                
+                endfor;
+            }
+            Comment: {
+                "Reglas de conectividad  Estándar (a donde puedo salir de i):
+                De un NOP se puede ir a un NPA o NCL, no se puede ir a un NPE.
+                De un NPA no se puede ir a otro NPA, solo se puede ir a un NPE o NCL
+                De un NCL se puede ir a otro NCL, NPA o NPE
+                De un NPE no se puede salir
+                
+                Reglas de Conectividad para reducción de Dominio:"
+            }
+        }
+        Procedure Seleccion_PAB_Mas_Cercana_EDS {
+            Body: {
+                !Obteniendo la planta j más cercana a la EDS i
+                SBIGM:=100000000000000000;
+                MINI:=SBIGM;
+                For i in NCL do
+                       for j in NPO do
+                               if TIVI(i,j)<MINI then !Identificando si TIVI es menor al paramero auxiliar MINI
+                                      MINI:=TIVI(i,j); !Reemplazando MINT, haciendolo = a TIVI en caso de que TIVI sea MENOR
+                                      PCE(i):=j; !Conjunto con la planta más cercana, necesario en procedimiento Calculo_Reducc_Dom_Conectividad
+                                      EPCE(i):=j; !elemento parámetro para usar como Indice
+                               endif;
+                       endfor;
+                        MINI:=SBIGM; !Inicializando la Bigm
+                Endfor;
+            }
+        }
+        Procedure Calculo_Reducc_Dom_Conectividad {
+            Body: {
+                !1.
+                !CÁLCULO DE PROCEDIMIENTOS PARA REDUCCIÓN DE DOMINIO:
+                        ! 1. No permitir visitas entre EDS “lejanas”, en distancia
+                for (i,j) | (i IN NCL and j IN NCL) do
+                        if DIST(i,j)> MAXD then
+                                PCON(i,j):=0
+                        endif;
+                endfor;
+                !2. De una EDS no salgo a un nodo de pernoctación que este más lejos (con un exceso porcentual) de lo que
+                !la EDS está de la planta de abastecimiento. Con esto debo garantizar que exista un nodo de pernoctación más
+                !cercano a la planta que cualquier EDS.
+                for (i,j,jj) |i in NCL  and j in NPE and jj in PCE(i) do !También se puede dejar el set PMCE(i) en vez de PMC
+                        if TIVI(i,j)>EXCP*TIVI(i,jj) then ! Si el tiempo de viaje de la  EDS i  al Nod pernocta j  es mayor que
+                                                          !el tiempo de viaje  de la  EDS i  a la planta jj (que es la planta   más cercana a i) en un exceso porcentual definido, entonces elimine la conectividad
+                                PCON(i,j):=0
+                        endif;
+                endfor;
+                !3.Desde un nodo no se puede ir a un nodo que esté a un tiempo mayor que la jornada de trabajo diaria.
+                !Ojo la Regla se deb cumplir con una Hogura, una distancia  lo suficientemente grande!
+                for (i,j) do
+                        if TIVI(i,j) > PDJO + ADTJ then    !Tiempo de la jornada que trabaja más en excedente. (nota, se podría envitar el k y t ya que
+                                                           !las jornadas son similares
+                                        PCON(i,j):=0
+                        endif;
+                endfor;
+            }
+        }
+        Procedure Calculo_Reducc_Dom_PFICT {
+            Body: {
+                ! Las EDS que estén a más de 3 horas de la Planta, no están conectadas con las plantas ficticias
+                
+                for (i,j)| (i in NCL and j in NPF)  Do
+                        if TIVI(i,j)>=TPFM then
+                                PCON(i,j):=0;
+                        endif;
+                        if TIVI(j,i)>=TPFM then
+                                PCON(j,i):=0;
+                        endif;
+                endfor;
+            }
+        }
+        DeclarationSection Parametros_Procesamiento_de_Datos {
+            Parameter MAXD {
+                Text: "Maxima distancia a permitir ";
+                Definition: 0;
+            }
+        }
+        Section Validacion_de_Datos {
+            DeclarationSection Identificadores_de_Validacion_y_Conexion {
+                Parameter TPFM {
+                    Text: "Tiempo máximo ala planta ficticia ";
+                    Definition: 3;
+                    Comment: "Es el tiempo por encima del cual un vehículo no puede  revisitar a la planta de abastecimiento en el mismo periodo.";
+                }
+                StringParameter MsjeValidacion;
+                Parameter SCON1 {
+                    IndexDomain: (i);
+                    Text: "Conectividdad de EDS con PAB";
+                    Definition: {
+                        SUM (j IN NPA, PCON(i,j))
+                        !SUM (j IN NPA, PCON(j,i))
+                    }
+                    Comment: "Utilizado para validar conectividad";
+                }
+                Parameter SCON2 {
+                    IndexDomain: (i);
+                    Text: "Conectividdad de EDS con PAB";
+                    Definition: {
+                        SUM (j IN NPA, PCON(j,i))
+                        !SUM (j IN NPA, PCON(i,j))
+                    }
+                    Comment: "Utilizado para validar conectividad";
+                }
+                Parameter SENPP2 {
+                    Text: "Suma sobre ENPP";
+                }
+                Parameter AUXI1 {
+                    IndexDomain: i;
+                    Text: "Contador ";
+                    Comment: "Utilizado para validar conectividad";
+                }
+                Parameter AUXI2;
+                Parameter SUCO {
+                    Text: "Suma de los valores 1 de la conectividad del parametro PCON";
+                    Definition: sum ((i,j),PCON(i,j));
+                }
+                Parameter EXCP {
+                    Text: "Exceso porcentual para la distancia EDS-NPE respecto a  NPA. Usado en el procedimeinto CalculoCOnectividadRed";
+                }
+                Parameter PDJO {
+                    Text: "Promedio de la diferencia de la jornada de trabajo. ";
+                    Definition: mean((k,t), TFJO(k,t)-TIJO(k,t));
+                    Comment: "útil para el procedimiento CalculoConectividad, el procedimiento 3 después de los cálculos estándar.";
+                }
+                Parameter ADTJ {
+                    Text: "Adición de holgura o exceso al promedio de la  diferencia del tiempo de jornada. Lo especifica el usuario ";
+                    Comment: "Se usa en el procedimiento Validacion_Conectividad";
+                }
+                Parameter PDES {
+                    Text: "Porcentaje de desviación de Capacidad en peso, capacidad de Compartimientos. Procedimiento: Validacion_CAPV_DENS";
+                    Range: [0, 1];
+                    Definition: 0.3;
+                }
+                Parameter REPE {
+                    IndexDomain: k;
+                    Text: "Relación Pesos: Usado en procedimiento Validacion_CAPV_DENS";
+                }
+                Parameter PCAL {
+                    IndexDomain: (k);
+                    Text: "Peso calculado a partir de la densidad y de la capacidad en vol de los Compartimentos";
+                }
+                Parameter DETV {
+                    Text: "Demanda Total en Volumen ";
+                }
+                Parameter CPTV {
+                    Text: "Capacidad Total en Volumen ";
+                }
+                Parameter CONT {
+                    Text: "Contador usado en el procedimiento Valicacion_VEH_CAPV_CACC";
+                }
+                Parameter MINI;
+                Parameter SBIGM {
+                    Text: "Super Big M: Valor muy grande. Procedimiento: Validacion_NPE_NPA_EDS";
+                }
+                Parameter AUXIL {
+                    IndexDomain: (j);
+                    Text: "Procedimiento: Validacion_NPE_NPA_EDS";
+                }
+                Parameter PAUX {
+                    IndexDomain: (i);
+                }
+                Parameter TSTV {
+                    IndexDomain: (i,j,k);
+                    Text: "tiempo de servicio  de k en i más el tiempo de viaje de i a j ";
+                    Definition: TSER(i,k) + TIVI(i,j);
+                }
+                Parameter MTSV {
+                    Text: "Mínimo de la suma entre TIVI y TSER ";
+                    Definition: {
+                        MIN ((i,j,k)|TSTV(i,j,k) and i <> j ,TSTV(i,j,k))
+                        
+                        ! denotar i en un conjunto de todos menos en los nodos de pernocatación
+                    }
+                }
+                Parameter CCTC {
+                    IndexDomain: i;
+                    Text: "Cantidad de Combustible a Transportar a la EDS en los periodos de planificación.";
+                    Definition: sum( (m,t), DEMA(i,m,t))-sum(m, INVI(i,m));
+                }
+                Parameter CPVV {
+                    Text: "La capacidad en volumen promedio de transporte de un vehículo por viaje.";
+                    Definition: sum (l, CACC(l)/CARD(VEH));
+                }
+                Parameter CVVC {
+                    IndexDomain: i;
+                    Text: "Número mínimo de viajes que necesita i";
+                    Definition: {
+                        CEIL(CCTC(i)/CPVV)
+                        !función CEIL retorna el entero menor que sea  mayor que X, donde X es el argumento
+                        !dentro de la función
+                    }
+                }
+                Parameter TCIC {
+                    IndexDomain: (i in NCL);
+                    Text: "El tiempo de ciclo de ir a EDS i desde la planta y volver a la planta";
+                    Definition: {
+                        TIVI(EPCE(i),i)+TIVI(i,EPCE(i))+TSEP(i)+TSEP(EPCE(i))
+                        !PTVI(i)+PTIV(i)+TSEP(i)+TSEP(EPCE(i))
+                        !PTVI(i)+PTIV(i)+TSEP(i)+TSEP(PMC(i))!Esta genera errror, a pesar  de que calcula la planta más cercana a i.
+                        
+                        !PTVI(i)+PTIV(i)+TSEP(i)+TSEP(j)
+                        !TSEP(j) pone problema prque no se define en index dom, mejor se una un promedio de servicio en todas las plantas
+                    }
+                }
+                Parameter TSEP {
+                    IndexDomain: i;
+                    Text: "Tiempo de servicio promedio  en el nodo i ";
+                    Definition: sum(k, TSER(i,k)/CARD(VEH));
+                }
+                Parameter DTTR {
+                    Text: "Demanda  en tiempo que tiene la red";
+                    Definition: sum(i, CVVC(i)*TCIC(i));
+                }
+                Parameter CTTF {
+                    Text: "Capacidad en tiempo de flota ";
+                    Definition: sum((k,t)|t in PEP,TFJO(k,t)-TIJO(k,t));
+                }
+                Parameter PTVI {
+                    IndexDomain: (i);
+                    Text: "tiempo de viaje promedio de ir de i a una planta";
+                    Definition: sum (j in NPA, TIVI(i,j))/CARD(NPA);
+                }
+                Parameter PTIV {
+                    IndexDomain: i;
+                    Text: "Tiempo promedio de ir de una planta a la eds i ";
+                    Definition: sum(j in NPA, TIVI(j,i))/CARD(NPA);
+                }
+                Parameter PTSP {
+                    Text: "Promedio de tiempos de servicio en todas las pantas ";
+                    Definition: sum( (k,i in NPA), TSER(i,k))/[CARD(VEH)*CARD(NPA)];
+                }
+                ElementParameter ENPP {
+                    IndexDomain: j;
+                    Text: "Nodo de pernoctación i  a sociado al nodo origen j";
+                    Range: NOD;
+                    Definition: {
+                        !{i|PNPP(i,j)=1}
+                    }
+                }
+                ElementParameter ENPP2 {
+                    IndexDomain: j;
+                    Text: "Nodo origen potencial i a sociado al nodo de pernoctación j ";
+                    Range: NOD;
+                    Definition: {
+                        !{i|PNPP(i,j)=1}
+                    }
+                }
+                Set CSCA {
+                    IndexDomain: l;
+                    SubsetOf: COM;
+                    Text: "Compartimientos sin Capacidad procedimiento: Validacion_CAPV_DENS";
+                }
+                Set VSCA {
+                    IndexDomain: k;
+                    SubsetOf: VEH;
+                    Text: "Vahículos sin apacidad en peso: Procedimiento:  Validacion_CAPV_DENS";
+                }
+                Set VSCV {
+                    IndexDomain: k;
+                    SubsetOf: VEH;
+                    Text: "Vehículos con capacidad en Peso que no tienen Capacidad en Volumen ";
+                }
+                ElementParameter EPCE {
+                    IndexDomain: i in NCL;
+                    Text: "Elemento Parámetro de la planta más cercana a la EDS i ";
+                    Range: NPA;
+                }
+                Set PCE {
+                    IndexDomain: i in NCL;
+                    SubsetOf: NPA;
+                    Text: "Planta Más Cercana a la EDS i ";
+                }
+            }
+            Procedure Definicion_ENPP {
+                Body: {
+                    EMPTY ENPP(j);
+                    for (i,j) | PNPP(j,i)=1  do
+                                    ENPP(j):=i
+                    endfor;
+                    
+                    EMPTY ENPP2(j);
+                    for (i,j) | PNPP(i,j)=1  do
+                                    ENPP2(j):=i
+                    endfor;
+                }
+            }
+            Procedure Validacion_INVI_CAPS {
+                Body: {
+                    !empty MsjeValidacion;
+                    for (i in NCL, m in PRC(i))  do
+                            if INVI(i,m) > CAPS(i,m) then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "El Inventario Inicial de  "  + m +" en el nodo "  + i +" es mayor que su capacidad de almacenamiento " ;
+                            endif;
+                    endfor;
+                    !dialogerror  ( MsjeValidacion );
+                }
+                Comment: "Revisado";
+            }
+            Procedure Validacion_PNOI_PNPV {
+                Body: {
+                    !empty MsjeValidacion;
+                    for (i  in NOP , k  )  do
+                      if PNOI(i,k)=1 then
+                            if PNPV(i,k) <> PNOI(i,k) then
+                              MsjeValidacion := MsjeValidacion + "\n" + "El nodo origen "  + i +" no se puede visitar con "  + k +"  y se esta asegurando que el vehículo parte de ese nodo en el primer periodo" ;
+                            endif;
+                       endif;
+                    endfor;
+                    !dialogerror (MsjeValidacion)
+                }
+            }
+            Procedure Validacion_TIJO_TFIJO {
+                Body: {
+                    !empty MsjeValidacion;
+                    !El tiempo de finalización de de Jornada debe ser mayor queel tiemo de Inicio de Jornada
+                    for (k,t)  do
+                      if TIJO(k,t) >=TFJO(k,t) then
+                              MsjeValidacion:= MsjeValidacion + "\n" + "El tiempo de inicio de la jornada del vehículo  "  + k +" en el periodo "  + t +"  es mayor que el tiempo de finalización de la jornada  " ;
+                     !LA DIFERENCIA entre TIJO y TFIJO no debe ser menor a la suma mínima de (TSER + TIVI)
+                       elseif  (TFJO(k,t)- TIJO(k,t)) < MTSV then
+                             MsjeValidacion:= MsjeValidacion + "\n" + "La diferencia entre TFJO  y TIJO  para "  + k +" en el periodo "  + t +"  es más pequeña que el mínimo de TIVI + TSER  " ;
+                       endif;
+                    endfor;
+                    !dialogerror (MsjeValidacion)
+                }
+            }
+            Procedure Validacion_CONECTIVIDAD {
+                Body: {
+                    Definicion_ENPP;
+                    !empty MsjeValidacion, AUXI2;
+                    for i IN NCL do
+                        AUXI2:=0;
+                        if SCON1(i)=0 then !Si no hay posibilidades de salir de i a una planta
+                            for j IN NPE do !Busque si hay posibilidades de ir a un nodo de pernoctacion
+                                    if PCON(i,j)=1 then !Si encuentra dicho nodo de pernoctacion
+                                            if SCON1(ENPP(j))>0 then !Pregunte si el nodo origen asociado al nodo de pernoctacion j se conecta con una planta
+                                                    AUXI2:=1; !Hay conectividad
+                                                    break;
+                                            endif;
+                                    endif;
+                            endfor;
+                            If  AUXI2=0 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "Del nodo "  + i +" No hay forma de volver a una planta de abastecimiento, ni directo, ni a traves de un nodo de pernoctacion" ;
+                            endif;
+                         endif;
+                    endfor;
+                    !dialogerror (MsjeValidacion);
+                    
+                    
+                    
+                    
+                    !empty AUXI2, MsjeValidacion;
+                    for i IN NCL do
+                        AUXI2:=0;
+                        if SCON2(i)=0 then !Si no hay posibilidades llegar a la EDS desde una Planta
+                            for j IN NOP do !Busque si hay posibilidades llegar a la  EDS desde un nodo origen
+                                    if PCON(j,i)=1 then !Si encuentra dicho nodo origen
+                                            if SCON2(ENPP2(j))>0 then !Pregunte si el nodo de pernoctación asociado al nodo de origen j se conecta con una planta
+                                                    AUXI2:=1; !Hay conectividad
+                                                    break;
+                                            endif;
+                                    endif;
+                            endfor;
+                            If  AUXI2=0 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "Al Nodo "  + i +" No hay forma de llegar desde una  planta de abastecimiento, ni directo, ni a traves de un nodo origen" ;
+                            endif;
+                         endif;
+                    endfor;
+                    !dialogerror (MsjeValidacion)
+                }
+                Comment: {
+                    "Revisado
+                    Valida que exista conectividad de una PAB a una EDS. La conectividad Puede ser directa o indirecta.
+                    (Directa si se viaja directo a la planta, e indirecta si se viaja primero a un nodo de pernoctación)
+                    El MODELO  supone que de una planta de Abastecimiento a una estación puedo llegar en menos de dos periodos."
+                }
+            }
+            Procedure Validacion_CAPV_DENS {
+                Body: {
+                    !Validar que la Capacidad en peso del vehículo y la DeNsidad sean congruentes con la capacidad  en volumen de
+                    !los compartimientos. (CAPP)
+                    
+                    
+                    
+                    !empty MsjeValidacion;
+                    empty REPE(k);
+                    for k in VEH do
+                            PCAL(k):=[sum(m,DENS(m))/CARD(PRO)]*sum(l in COV(k), CACC(L));
+                            REPE(k):=ABS(1-PCAL(k)/CAPV(K));
+                            IF  REPE(k)>PDES then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "las densidades y las capacidades delos compartimentos no  son  congruentes con la  la capacidad en peso del vehículo "  + k +" ." ;
+                            ENDIF;
+                    Endfor;
+                    !dialogerror (MsjeValidacion)
+                }
+            }
+            Procedure Validacion_DEM_CACC {
+                Body: {
+                    !Validar demanda en Volumen vs Capacidad en Volumen
+                    DETV:=SUM((i,m,t), DEMA(i,m,t));
+                    CPTV:=SUM(l,(CACC(L)));
+                    IF DETV>CPTV THEN
+                            MsjeValidacion := MsjeValidacion + "\n" + "lA Demanda total es mayor que la capacidad de todos los compartimentos "
+                    ENDIF;
+                    !La la demanda hay que restarle el inventario Inicial.
+                    ! Calcular la demanda, y la capacidad en tiempo. La demanda puede ser mayor, pero el vehiculo puede hacer varios viajes.
+                }
+                Comment: "Pendiente por validar capacidad de oferta versus demanda.";
+            }
+            Procedure Valicacion_VEH_CAPV_CACC {
+                Body: {
+                    !Validar que todos los vehículos tengan capacidad en peso  y en Volumen
+                    Empty CSCA, VSCA;
+                    CONT:=0;
+                    For l do
+                            if CACC(l) <=0 then
+                                    CONT:=CONT+1;
+                                    CSCA(l):=l;
+                            endif;
+                    Endfor;
+                    if CONT>0 then
+                            MsjeValidacion := MsjeValidacion + "\n" + "Existen compartimentos sin capacidad, dirijase al Conjunto CSCA para ver loscompartimientos que no tienen Capacidad"
+                    endif;
+                    
+                    CONT:=0;
+                    For k do
+                            if CAPV(k) <=0 then
+                                    CONT:=CONT+1;
+                                    VSCA(k):=k;
+                            endif;
+                    Endfor;
+                    if CONT>0 then
+                             MsjeValidacion := MsjeValidacion + "\n" + "Existen vehícuos sin capacidad, Dirijase al Conjunto VSCA para ver vehícuos  que no tienen Capacidad en peso"
+                    endif;
+                }
+                Comment: "Pendiente msje de validación";
+            }
+            Procedure Validacion_CARD_SETS {
+                Body: {
+                    !Asegurando que hayan Plantas
+                    If CARD(NPA)=0 then
+                               MsjeValidacion := MsjeValidacion + "\n" + "No existen Plantas "
+                    endif;
+                    
+                    !Asegurando que hayan nodos de pernoctación
+                    If CARD(NPE)=0 then
+                               MsjeValidacion := MsjeValidacion + "\n" + "No existen Nodos de pernoctación"
+                    endif;
+                    
+                    !Asegurando que hayan Nodos Cliente
+                    
+                    If CARD(NCL)=0 then
+                               MsjeValidacion := MsjeValidacion + "\n" + "No existen Nodos Cliente "
+                    endif;
+                    
+                    !Asegurando que hayan Tipos de Vehículos
+                    If CARD(TVE)=0 then
+                               MsjeValidacion := MsjeValidacion + "\n" + "tipos de vehículos TVE "
+                    endif;
+                    
+                    !Asegurando que hayan Vehículos
+                    If CARD(VEH)=0 then
+                               MsjeValidacion := MsjeValidacion + "\n" + "No existen Vehículos en VEH "
+                    endif;
+                    
+                    !Asegurando que existan Productos
+                    
+                    if CARD(PRO)=0 then
+                            MsjeValidacion := MsjeValidacion + "\n" + "No existe ningún Producto"
+                    endif;
+                    
+                    !Asegurando que existan Periodos
+                    
+                    if CARD(PHO)=0 then
+                            MsjeValidacion := MsjeValidacion + "\n" + "El horizonte de tiempo está vacío"
+                    endif;
+                    
+                    !Asegurando que el subconjunto de Periodos PEP tenga elementos
+                    
+                    if CARD(PPR)=0 then
+                            MsjeValidacion := MsjeValidacion + "\n" + "El subconjunto de periodos PEP está Vacío"
+                    endif;
+                    
+                    !Asegurando que el conjutno TIN  tenga los 5 Tipos de Nodos
+                    if CARD(TIN)<>5 then
+                            MsjeValidacion := MsjeValidacion + "\n" + "No están definidos todos los cinco tipos de Nodo en TIN"
+                    endif;
+                }
+            }
+            Procedure Validacion_CARD_INDEXED_SETS {
+                Body: {
+                    !Que todos los Vehículos tengan Compartimentos
+                    for k in VEH  do
+                            If CARD(COV(k))=0 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "el vehículo" + k + "está sin Compartimentos "
+                            endif;
+                    endfor;
+                    
+                    !Asegurar que para cada Nodo de intercambio exista al menos un producto que se pueda intercambiar
+                    for i in NIT do
+                            if CARD(PRC(i))<1 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "El nodo de Intercambio " + i + " No puede intercambiar ningún producto"
+                            endif;
+                    endfor;
+                    
+                    !Asegurar que Todo nodo pueda ser visitado al menos por algún vehículo: Esta se hace con el parametro de definición y no con CARD,
+                    !porque es más fácil usar el parámetro en este caso
+                    !Se hace con dos for porque quiero fijar i y empezar a variar k
+                    for i do
+                            if sum(k, PNPV(i,k))<1 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "El nodo " + i + " No puede ser visitado por ningún vehículo (ver PNPV)"
+                            endif;
+                    endfor;
+                    
+                    ! Asegurar que el Vehículo k este en un nodo origen al iniciar. No más de 1 y no menos de 1.
+                    for k do
+                            if sum(i in NOP, PNOI(i,k))<>1 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "El vehículo  " + k  + "Está mal asociado a su nodo origen (a más de uno o a ninguno) ver PNOI"
+                            endif;
+                    endfor;
+                    
+                    ! Asegurar que el Vehículo k no esté asociado a un nodo origen que no sea del tipo ORIGE, es decir en NOP.
+                    for k do
+                            if sum( i| i in NIT or i in NPE, PNOI(i,k))>=1 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "El vehículo" + k  + "Está  asociado a un nodo origen que no es del tipo ORIGE. (Ver PNOI)"
+                            endif;
+                    endfor;
+                }
+            }
+            Procedure Validacion_NPE_NOP {
+                Body: {
+                    !Si existe un nodo de Pernoctación, debe existir un nodo Origen asociado a él.
+                    !En otras palabras, deben haber tantos NOP como NPE
+                    If Card(NPE)<>card(NOP) then
+                               MsjeValidacion := MsjeValidacion + "\n" + "Existe un desbalance ente los nodos de Pernoctación y los Origenes"
+                    endif;
+                    
+                    ! Cada nodo origen solo debe tener un nodo asociado de Pernoctación y Visceversa
+                    for i in NOP do
+                            if sum (j in NPE, PNPP(j,i))=0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El nodo origen potencial" + i + "No está asocuiado a solo un nodo de pernoctación (Ver PNPP)"
+                            endif;
+                    endfor;
+                    
+                    for i in NPE do
+                            if sum (j in NOP, PNPP(i,j))=0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El nodo de pernoctaión" + i + "No está asocuiado a solo un nodo origen potencial  (Ver PNPP)"
+                            endif;
+                    endfor;
+                }
+            }
+            Procedure Validacion_Parametros {
+                Body: {
+                    !Todoos los Parámetros deben ser positivos
+                    !DEMA e INVS
+                    for (i,m,t) do
+                            if DEMA(i,m,t)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "La demanda del nodo " + i + " del producto "  + m +" del periodo "  + t+ " ES NEGATIVA "
+                            endif;
+                    
+                            if INVS(i,m,t)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El inventario de seguridad INVS del nodo  " + i + " del producto "  + m +" del periodo "    + t+ " ES NEGATIVO "
+                            endif;
+                    endfor;
+                    
+                    !CAPSM and CALM and INVI(i,m)
+                    for (i,m) do
+                            if CAPS(i,m)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " La capacidad máxima  CAPS en el nodo " + i + " del producto "  + m + " ES NEGATIVA "
+                            endif;
+                            if CALM(i,m)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " El costo de almacenamiento del nodo" + i + " del producto "  + m + " ES NEGATIVA "
+                            endif;
+                             if INVI(i,m)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " El Inventatio inicial en el nodo " + i + " del producto "  + m + " ES NEGATIVO "
+                            endif;
+                    endfor;
+                    !TIVI
+                    for (i,j) do
+                            if TIVI(i,j)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " El tiempo TIVI de viaje del nodo   " + i + " al nodo  "  + j + " ES NEGATIVO "
+                            endif
+                    endfor;
+                    
+                    !CTRA
+                    for (i,j,v) do
+                            if CTRA(i,j,v)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " El Costo de Tramo CTRA desde el nodo i    " + i + " al nodo  "  + j + " COn el tipo de vehiculo " + v + " ES NEGATIVO "
+                            endif;
+                    endfor;
+                    
+                    !TMIN y TMAX
+                    for (i,t) do
+                            if TMIN(i,t)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " La ventana de Tiempo Min TMIN   en el nodo   " + i + " en el periodo "  + t +  " ES NEGATIVA "
+                            endif;
+                            if TMAX(i,t)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " La ventana de Tiempo Max TMIN   en el nodo   " + i + " en el periodo "  + t +  " ES NEGATIVA "
+                            endif;
+                    endfor;
+                    
+                    !TSER
+                    for (i,k) do
+                            if TSER(i,k)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El tiempo de servicio TSER en el nodo   " + i + " del vehículo  "  + k +  " ES NEGATIVO "
+                            endif;
+                    endfor;
+                    
+                    !CACC
+                    for l do
+                            if CACC(l)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "la capacidad máxima CACC del compartimento "  + l +  " ES NEGATIVA "
+                            endif;
+                    endfor;
+                    
+                    !CAPV Y COUV
+                    for k do
+                            if CAPV(K)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "lA capacidad en peso CAPV del vehículo  "  + k +  " ES NEGATIVA "
+                            endif;
+                            if COUV(K)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El costo de usar el vehículo COUV   "  + k +  " ES NEGATIVO "
+                            endif;
+                    endfor;
+                    
+                    !TFJO y TIJO
+                    for (k,t) do
+                            if TFJO(k,t)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El tiempo de fin de la jornada TFJO del vehículo  "  + k +  "en el periodo " + t + " ES NEGATIVO "
+                            endif;
+                            if TIJO(K,t)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El tiempo de fin de la jornada TFJO del vehículo  "  + k +  "en el periodo " + t + " ES NEGATIVO "
+                            endif;
+                    endfor;
+                    
+                    !DENS(m)
+                    for m do
+                            if DENS(m)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "La densidad DENS del producto  "  + m +   " ES NEGATIVA "
+                            endif;
+                    endfor;
+                    
+                    !CCIV
+                    for (m,l) do
+                            if CCIV(m,l)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "El inventario inicial del compartimento "  + l +  " del producto  " + m + " ES NEGATIVO "
+                            endif;
+                    Endfor;
+                    !CCIV
+                    for v do
+                            if CDUV(v)<0 then
+                                     MsjeValidacion := MsjeValidacion + "\n" + "Costo de usar en un día el  vehículo CDUV  del tipo "  + v +   " ES NEGATIVO "
+                            endif;
+                    endfor;
+                }
+            }
+            Procedure Validacion_TMIN_TMAX {
+                Body: {
+                    ! La ventana de tiemo TMAX debe ser mayor que TMIN
+                    for (i,t) do
+                            if TMIN(i,t)>TMAX(i,t) then
+                                     MsjeValidacion := MsjeValidacion + "\n" + " La ventana de Tiempo Min TMIN   en el nodo   " + i + " en el periodo "  + t +  " En mayor que TMAX "
+                            endif
+                    endfor;
+                }
+            }
+            Procedure Validacion_Caps_VOLUM_TIEMPO {
+                Body: {
+                    if CTTF<DTTR then
+                    	   MsjeValidacion := MsjeValidacion + "\n" + " Es posible que no hayan soluciones factibles respecto a la Capacidad para atender la demanda en tiempo"
+                    endif;
+                }
+            }
+            Procedure Validacion_VEH_NOP {
+                Body: {
+                    !Todos los vehículos deben tener un nodo origen asociado
+                    
+                    for k do
+                    	if sum(i| i in NOP,PNOI(i ,k ))=0 then
+                    		MsjeValidacion:= MsjeValidacion + "\n" + " El vehículo  "  + k +" No esta asociado a ningún nodo origen al iniciar corrida (ver PNOI) " ;
+                    	elseif  sum(i in NOP,PNOI(i ,k ))>1 then !Cada vehículo no debe tener más de un nodo origen asociado. Solamente uno
+                    			MsjeValidacion:= MsjeValidacion + "\n" + " El vehículo  "  + k +" Está asociado a más de un nodo origen potencial a la vez " ;
+                    	endif;
+                    !La asociación de del vehículo al nodo origen debe se a un Nodo origen  y no otro tipo de nodo
+                    	if sum(i|i in NPA or i in NCL or i in NPE,PNOI(i ,k ))>0 then
+                    		MsjeValidacion:= MsjeValidacion + "\n" + " El vehículo  "  + k +" Est asociado a  un nodo  que no es del tipo nodo origen" ;
+                    	endif
+                    endfor;
+                }
+            }
+            Procedure Validacion_BIGMs {
+                Body: {
+                    !Que todos los  parámetros tengan valores lógicos, ver las Big M
+                    !Validación MBIN
+                }
+            }
+            Procedure Todas_Las_Validaciones {
+                Body: {
+                    Empty MsjeValidacion;
+                    
+                    CalculoConjuntos;
+                    CalculoConectividadRed;
+                    !Ojo estos Procedimientos solo deben dejarse activos cuando quiero trabajar con conecividad reducida
+                    Seleccion_PAB_Mas_Cercana_EDS;
+                    Calculo_Reducc_Dom_Conectividad;
+                    Calculo_Reducc_Dom_PFICT;
+                    
+                    Definicion_ENPP;
+                    Validacion_INVI_CAPS;
+                    Validacion_PNOI_PNPV;
+                    Validacion_TIJO_TFIJO;
+                    Validacion_CONECTIVIDAD;
+                    Validacion_CAPV_DENS;
+                    Validacion_DEM_CACC;
+                    Valicacion_VEH_CAPV_CACC;
+                    Validacion_Parametros;
+                    Validacion_TMIN_TMAX;
+                    Validacion_Caps_VOLUM_TIEMPO;
+                    Validacion_VEH_NOP;
+                    dialogerror  ( MsjeValidacion)
+                }
+            }
+        }
+    }
+    Section Solucion_Modelo {
+        Procedure InicializacionVariables {
+            Body: {
+                empty allvariables; !Se debe dejar porque sino se borra, se calcula de nuevo sobre los datos que ya están, y esto genera problemas
+                !incializa los inventarios de cada cliente
+                for (i in NCL, m in PRO) do
+                        INV(i,m,PINI-1):=INVI(i,m);
+                endfor;
+                !Inicializa los inventarios en vehículo
+                for (k, j in NOI(k), i in NNO(j), m, l in COV(k)) do
+                        CCV(i,m,l,PINI-1):=CCIV(m,l);
+                endfor;
+                !Inicializa variable de asignacion de visita al nodo origen
+                for (k, j in NOI(k), i in NNO(j)) do
+                        AVI(i,k,PINI-1):=1;
+                endfor;
+            }
+        }
+        Procedure SolucionMCDP_CUV {
+            Body: {
+                CalculoConjuntos;
+                CalculoConectividadRed;
+                InicializacionVariables;
+                Seleccion_PAB_Mas_Cercana_EDS;
+                Calculo_Reducc_Dom_Conectividad;
+                Calculo_Reducc_Dom_PFICT;
+                
+                !!MCO_DEFINITION:=ME::GetAttribute(MCO_CUV,'Definition');
+                !me::Create(
+                !"MCO_CUV_1", ! (input) a string
+                !newType, ! (input) an element
+                !parentId, ! (input) an element
+                !pos ! (optional) an integer
+                
+                
+                ME::SetAttribute(MCO_CUV,'Definition',"10");
+                
+                ModeloActual:="MCDP_CUV";
+                MCO_GENERICO:=MCO_CUV;! No fuciona porque no está Igualando la Definción si no el valor de la Var
+                RES_GENERICO:=RES_CUV;
+                VAR_GENERICO:=VAR_CUV;
+                
+                Solve MCDP_GENERICO;
+            }
+        }
+        Procedure SolucionMCDP_SUV {
+            Body: {
+                CalculoConjuntos;
+                CalculoConectividadRed;
+                InicializacionVariables;
+                Seleccion_PAB_Mas_Cercana_EDS;
+                Calculo_Reducc_Dom_Conectividad;
+                Calculo_Reducc_Dom_PFICT;
+                
+                ModeloActual:=" MCDP_SUV";
+                MCO_GENERICO:=MCO_SUV; ! No fuciona porque no está Igualando la Definción si no el valor de la Var
+                RES_GENERICO:=RES_SUV;
+                VAR_GENERICO:=VAR_SUV;
+                
+                Solve MCDP_GENERICO;
+            }
+        }
+        Procedure SolucionMCDP_CUV_PDT {
+            Body: {
+                CalculoConjuntos;
+                CalculoConectividadRed;
+                InicializacionVariables;
+                Seleccion_PAB_Mas_Cercana_EDS;
+                Calculo_Reducc_Dom_Conectividad;
+                Calculo_Reducc_Dom_PFICT;
+                solve MCDP_CUV_PDT; !Incluye perturbación a la FO para evitar degeneración causada por el tiempo
+                !solve MCDPR_MinimizarCostos;
+            }
+        }
+        Procedure SolucionMCDP_SUV_PDT {
+            Body: {
+                CalculoConjuntos;
+                CalculoConectividadRed;
+                InicializacionVariables;
+                Seleccion_PAB_Mas_Cercana_EDS;
+                Calculo_Reducc_Dom_Conectividad;
+                Calculo_Reducc_Dom_PFICT;
+                solve MCDP_SUV_PDT; !Incluye perturbación a la FO para evitar degeneración causada por el tiempo
+            }
+        }
+    }
+    Section GUI {
+        Section Mapa {
+            DeclarationSection Nodos {
+                Parameter CoorX {
+                    IndexDomain: i;
+                }
+                Parameter CoorY {
+                    IndexDomain: i;
+                }
+                Parameter MaxCoorX {
+                    Text: "Margen derecha";
+                    Definition: max(i, CoorX(i));
+                }
+                Parameter MinCoorX {
+                    Definition: min(i, CoorX(i));
+                }
+                Parameter PorMar {
+                    Text: "Porcentaje del rango que hace la margen";
+                    Definition: 0.1;
+                }
+                Parameter MarDer {
+                    Text: "Margen derecha";
+                    Definition: MaxCoorX+PorMar*(MaxCoorX-MinCoorX);
+                }
+                Parameter MarIzq {
+                    Text: "Margen izquierda";
+                    Definition: MinCoorX-PorMar*(MaxCoorX-MinCoorX);
+                }
+                Parameter MaxCoorY {
+                    Definition: max(i, CoorY(i));
+                }
+                Parameter MinCoorY {
+                    Definition: min(i, CoorY(i));
+                }
+                Parameter MarSup {
+                    Text: "Margen superior";
+                    Definition: MaxCoorY+PorMar*(MaxCoorY-MinCoorY);
+                }
+                Parameter MarInf {
+                    Text: "Margen inferior";
+                    Definition: MinCoorY-PorMar*(MaxCoorY-MinCoorY);
+                }
+            }
+            DeclarationSection Arcos {
+                Parameter Arc01 {
+                    IndexDomain: (i,j,k,t);
+                }
+                ElementParameter ArcColor {
+                    IndexDomain: k;
+                    Range: AllColors;
+                }
+            }
+            DeclarationSection FiltrosMapas {
+                Set lb01 {
+                    SubsetOf: VEH;
+                    Text: "Listbox indice libre asociado al vehiculo";
+                }
+                ElementParameter lb02 {
+                    Text: "indice libre asociado al periodo";
+                    Range: PHO;
+                }
+            }
+            Procedure MODEL_GUI {
+                Body: {
+                    !Asignación de variable a arco
+                    Arc01(i,j,k,t):=ATR(i,j,k,t);
+                }
+            }
+        }
+        Section Graficas {
+            DeclarationSection ParametrosAuxGraficas {
+                Parameter PCCC {
+                    IndexDomain: (i,m,t);
+                    Definition: sum(l in COM, CCC(i,m,l,t));
+                }
+                Parameter PCCV {
+                    IndexDomain: (i,m,k,t);
+                    Definition: sum(l in COV(k), CCV(i,m,l,t));
+                }
+            }
+            DeclarationSection FiltrosGraficas {
+                Set lb03 {
+                    SubsetOf: PRO;
+                    Text: "List box indice libre asociado al producto";
+                }
+                ElementParameter lb04 {
+                    Text: "list box indice libre asociado al cliente";
+                    Range: NOD;
+                }
+                ElementParameter lb05 {
+                    Text: "indice libre asociado al vehiculo";
+                    Range: VEH;
+                }
+                Set lb06 {
+                    SubsetOf: COM;
+                    Text: "indice libre asociado a los compartimientos";
+                }
+                ElementParameter lb07 {
+                    Text: "indice libre asociado al producto";
+                    Range: PRO;
+                }
+            }
+        }
+        Section Gant {
+            DeclarationSection Interfaz {
+                StringParameter DesVeh {
+                    IndexDomain: k;
+                    Definition: FormatString("Vehículo%i", ord(k));
+                }
+                StringParameter DesNod {
+                    IndexDomain: i;
+                    Definition: FormatString("Nodo%i", ord(i));
+                }
+                Parameter TIIN {
+                    IndexDomain: (i,k,t);
+                }
+                Parameter TIPR {
+                    IndexDomain: (i,k,t);
+                }
+                ElementParameter Perio {
+                    Range: PHO;
+                }
+                Parameter MAXTIME {
+                    IndexDomain: t;
+                    Range: free;
+                    Definition: max((i,k),TLL(i,k,t));
+                }
+            }
+            Procedure TimeProcess {
+                Body: {
+                    TIIN(i,k,t)  := TLL(i,k,t);
+                    !TIIN(i,k,t)  := TLL(first(j | ATR(i,j,k,t)),k,t);
+                    TIPR(i,k,t) := sum (j | ATR(i,j,k,t), TSER(i,k)+TIVI(i,j));
+                    PageRefreshAll();
+                }
+            }
+        }
+    }
+    Section Leer_de_Excel {
+        Procedure Leer_BD_Excel {
+            Body: {
+                Spreadsheet::SetActiveSheet( NombreLibro, "MAE_NOD" ); !establece un libro y una hoja activa donde están los datos
+                Spreadsheet::RetrieveSet( NombreLibro, NOD, "MAE_NOD" );
+                !Retrieveset permite leer los elementos de un conjunto
+                Spreadsheet::RetrieveParameter( NombreLibro, CoorX, "COOR_LON" );
+                Spreadsheet::RetrieveParameter( NombreLibro, CoorY, "COOR_LAT" );
+            }
+        }
+        DeclarationSection Parametros_Lectura {
+            StringParameter NombreLibro {
+                Definition: "TablasDatosMCDP.xlsm";
+            }
+        }
+    }
+    Section Tuning_Solver_Options {
+        DeclarationSection Argumentos {
+            Set FixedOptions {
+                SubsetOf: AllOptions;
+                Comment: "Se deben listar las opciones que no queremos que Cplex fije";
+            }
+            ElementParameter genMathProgram {
+                Range: AllGeneratedMathematicalPrograms;
+            }
+        }
+        Procedure TuningCplex {
+            Body: {
+                !First create the GMP out of the Math Program
+                genMathProgram := GMP::Instance::Generate(MCDP_SUV);
+                !Then call the TuneSingleGMP function, which will try to find a good
+                !combination of settings for the solver options for this instance.
+                !The settings that are in the set FixedOptions will not be considered
+                !for tuning.
+                !The found settings will be applied directly in the project settings
+                !and also will be written to the file "tuned_options_gmp.opt"
+                gmp::Tuning::TuneSingleGMP(
+                   GMP                : genMathProgram ,
+                   FixedOptions       : FixedOptions ,
+                   ApplyTunedSettings : 1 , !Save found settings directly in project
+                   OptionFileName     : "tuned_options_gmp.opt" ) ; !Store found settings in this file
+                
+                !This call will try to find a combination of settings for
+                !the solver options that are good for the set of MPS/LP files that
+                !are found in the subdirectory mps-files in the directory of
+                !the project.
+                !The settings that are in the set FixedOptions will not be considered
+                !for tuning.
+                !The found settings will be applied directly in the project settings
+                !and also will be written to the file "tuned_options_gmp_mps.opt"
+                !gmp::Tuning::TuneMultipleMPS(
+                !   DirectoryName      : "mps-files" , ! location of mps files, relative to project
+                !   Solver             : 'CPLEX 12.3' ,! Which solver to use, in this case CPLEX 12.3
+                !   FixedOptions       :  FixedOptions , !Consider these options unchangable.
+                !   ApplyTunedSettings :  1 , !Save found settings directly in project
+                !   OptionFileName     : "tuned_options_gmp_mps.opt" ) ;  !Store found settings in this file
+            }
+        }
+    }
+    Section Experimentos {
+        Procedure StartStopwatch {
+            Body: {
+                !Use the CurrentToString AIMMS function to store the current time
+                    !in YYYY-MM-DD HH:MM:SS:TT format
+                    StartTime := CurrentToString( "%c%y-%m-%d %H:%M:%S:%t");
+            }
+        }
+        Procedure StopStowatch {
+            Body: {
+                !Using the CurrentToMoment AIMMS function, we can ask for the number
+                    !of ticks that have elapsed at the moment since the given StartTime
+                    !(which was stored by calling the StartStopwatch procedure).
+                    !Please note that we do not actually 'stop' the stopwatch, but only
+                    !store the time elapsed.
+                    ElapsedTime := CurrentToMoment( [tick], StartTime );
+            }
+        }
+        DeclarationSection Parametros_Experimentos {
+            Quantity SI_Time_Duration {
+                BaseUnit: s;
+                Conversions: tick -> s : # -> # / 100;
+                Comment: "Expresses the value for the duration of periods.";
+            }
+            StringParameter StartTime {
+                Comment: "\"Time the stopwatch was started\"";
+            }
+            Parameter ElapsedTime {
+                Unit: s;
+            }
+            StringParameter Caso;
+            StringParameter ModeloActual;
+            Parameter MAXD_A;
+            StringParameter Solver_A;
+            Parameter CantidadRestricciones;
+            Parameter CantidadVariables;
+            Parameter Iteraciones;
+            Parameter Nodos_a;
+            Parameter BestLPBound;
+            Parameter BestSolution;
+            Parameter Gap;
+            Parameter SolvingTime;
+            Parameter TotalTime;
+            Parameter InicialTime;
+            Parameter EndTime;
+            StringParameter NombreLibroCorridas {
+                Definition: "AnalisisCorridas.xlsm";
+            }
+            Parameter ParametroPruebalectura;
+        }
+        Procedure AlmacenarEstadisticasCorrida {
+            Body: {
+                !MAXD_A:=MAXD;
+                CantidadRestricciones:= MCDP_GENERICO.NumberOfConstraints;
+                CantidadVariables:= MCDP_GENERICO.NumberOfVariables;
+                Iteraciones := MCDP_GENERICO.iterations;
+                Nodos_a:=MCDP_GENERICO.nodes;
+                BestLPBound:=MCDP_GENERICO.bestbound;
+                BestSolution:=MCDP_GENERICO.Objective;
+                Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                SolvingTime:=MCDP_GENERICO.SolutionTime;
+            }
+        }
+        Procedure IMprimirEstadisticos {
+            Body: {
+                Spreadsheet::RunMacro(
+                NombreLibroCorridas, ! (input) scalar string expression
+                "RangosDinEstadisticos" ! (input) scalar string expression
+                );
+                
+                Spreadsheet::SetActiveSheet(NombreLibroCorridas,"Registros" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,CantidadRestricciones,"Restricciones" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, CantidadVariables, "Variables" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,Iteraciones , "Iteraciones" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, Nodos_a, "Nodos" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, BestLPBound, "BestLPBound" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,BestSolution , "BestSolution" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,Gap, "Gap" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, SolvingTime, "SolvingTime" );
+            }
+        }
+        Procedure PruebaLecturaExcel {
+            Body: {
+                Spreadsheet::SetActiveSheet(NombreLibroCorridas,"Datos" );
+                Spreadsheet::RetrieveParameter( NombreLibroCorridas, ParametroPruebalectura, "ParametroPruebalectura" );
+            }
+        }
+        Procedure Procedure_1;
+    }
+    Procedure MainInitialization;
+    Procedure MainExecution {
+        Body: {
+            !SolucionMCDP_SUV;
+            StartStopwatch;
+            !SolucionMCDP_GENERICO;
+            SolucionMCDP_CUV;
+            StopStowatch;
+            
+            !Tllegadas;
+            !MODEL_GUI;
+            !TimeProcess;
+        }
+    }
+    Procedure MainTermination {
+        Body: {
+            return DataManagementExit();
+        }
+    }
+    Procedure BorrarDatos {
+        Body: {
+            empty allvariables, allsets, allparameters;
+        }
+    }
+    Procedure BorrarSolucion {
+        Body: {
+            Empty allvariables;
+        }
+    }
+}

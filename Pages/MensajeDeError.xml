@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<Page Version="4000" TimeStamp="2014-08-30 21:17:34">
+	<Location top="5" left="148" bottom="491" right="903" />
+	<PageEditSize Type="Inherited" />
+	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
+	<IsDialogPage>true</IsDialogPage>
+	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
+	<Background Inherited="true" />
+	<PageObject Type="Scalar">
+		<Location top="42" left="66" bottom="426" right="744" />
+		<TabOrder>1</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<Layout>MultipleLineEditField</Layout>
+		<VerticalScrollbar>true</VerticalScrollbar>
+		<SeparatorSign>=</SeparatorSign>
+		<ExplicitIdentifier>
+			<Identifier>MsjeValidacion</Identifier>
+			<NumberFormat Width="15" Decimals="0" Alignment="Left" ShowDefaults="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+			<Symbol>MsjeValidacion</Symbol>
+		</Model>
+	</UsedReferences>
+</Page>

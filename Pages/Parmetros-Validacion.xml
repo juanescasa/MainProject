@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<Page Version="4000" TimeStamp="2014-08-30 21:17:34">
+	<PageEditSize Type="Inherited" />
+	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
+	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
+	<Background Inherited="true" />
+	<PageObject Type="Table">
+		<Location top="48" left="36" bottom="210" right="264" />
+		<TabOrder>5</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CAPV( k )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="7" Decimals="0" Alignment="Center" />
+		</ExplicitIdentifier>
+		<ExplicitIdentifier>
+			<Identifier>PCAL( k )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="8" Decimals="2" Alignment="Center" />
+		</ExplicitIdentifier>
+		<ExplicitIdentifier>
+			<Identifier>REPE( k )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="5" Decimals="2" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="30" left="72" bottom="60" right="258" />
+		<StaticText>Validacion_CAPV_DENS</StaticText>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="60" left="282" bottom="108" right="474" />
+		<TabOrder>6</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>DETV</Identifier>
+			<FirstColumn>0</FirstColumn>
+			<NumberFormat Width="6" Decimals="0" />
+		</ExplicitIdentifier>
+		<ExplicitIdentifier>
+			<Identifier>CPTV</Identifier>
+			<FirstColumn>0</FirstColumn>
+			<NumberFormat Width="7" Decimals="0" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="30" left="288" bottom="60" right="474" />
+		<StaticText>Validacion_DEM_CACC</StaticText>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="18" left="630" bottom="48" right="816" />
+		<StaticText>Validacion_VEH_CAPV_CACC</StaticText>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="54" left="528" bottom="204" right="696" />
+		<TabOrder>11</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>CSCA( l, COM )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="54" left="714" bottom="198" right="894" />
+		<TabOrder>7</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>VSCA( k, VEH )</Identifier>
+			<FirstColumn>1</FirstColumn>
+			<NumberFormat Width="1" Decimals="0" Binary="true" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Composite Table">
+		<Location top="216" left="534" bottom="354" right="696" />
+		<TabOrder>8</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<Domain>
+			<Identifier>CSCA( l, COM )</Identifier>
+			<Index Name="l" />
+			<Index Name="COM" />
+		</Domain>
+	</PageObject>
+	<PageObject Type="Composite Table">
+		<Location top="216" left="714" bottom="354" right="882" />
+		<TabOrder>10</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<Domain>
+			<Identifier>VSCA( k, VEH )</Identifier>
+			<Index Name="k" />
+			<Index Name="VEH" />
+		</Domain>
+	</PageObject>
+	<PageObject Type="Text">
+		<Location top="234" left="108" bottom="264" right="294" />
+		<StaticText>Validacion_VEH_CAP_SIN_CAPVO</StaticText>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextColor RGB="#000000" />
+	</PageObject>
+	<PageObject Type="Composite Table">
+		<Location top="258" left="108" bottom="372" right="276" />
+		<TabOrder>9</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<Domain>
+			<Identifier>VSCV( k, VEH )</Identifier>
+			<Index Name="k" />
+			<Index Name="VEH" />
+		</Domain>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+			<Symbol>k</Symbol>
+			<Symbol>l</Symbol>
+			<Symbol>CSCA</Symbol>
+			<Symbol>VSCA</Symbol>
+			<Symbol>VSCV</Symbol>
+			<Symbol>COM</Symbol>
+			<Symbol>CPTV</Symbol>
+			<Symbol>REPE</Symbol>
+			<Symbol>CAPV</Symbol>
+			<Symbol>PCAL</Symbol>
+			<Symbol>DETV</Symbol>
+			<Symbol>VEH</Symbol>
+		</Model>
+	</UsedReferences>
+</Page>
