@@ -2291,12 +2291,15 @@ Model MCDP {
         }
         Procedure SolucionMCDP_CUV {
             Body: {
-                CalculoConjuntos;
-                CalculoConectividadRed;
-                InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
-                Calculo_Reducc_Dom_Conectividad;
-                Calculo_Reducc_Dom_PFICT;
+                !CalculoConjuntos;
+                !CalculoConectividadRed;
+                !InicializacionVariables;
+                !Seleccion_PAB_Mas_Cercana_EDS;
+                !Calculo_Reducc_Dom_Conectividad;
+                !Calculo_Reducc_Dom_PFICT;
+                
+                MyLib:= me::CreateLibrary("RunTimeLibrary_1","rlt1");
+                
                 
                 !!MCO_DEFINITION:=ME::GetAttribute(MCO_CUV,'Definition');
                 !me::Create(
@@ -2308,13 +2311,13 @@ Model MCDP {
                 
                 !ME::SetAttribute(MCO_CUV,'Definition',"10");
                 
-                ModeloActual:="MCDP_CUV";
-                MCO_GENERICO:=MCO_CUV;! No fuciona porque no está Igualando la Definción si no el valor de la Var
-                RES_GENERICO:=RES_CUV;
-                VAR_GENERICO:=VAR_CUV;
+                !ModeloActual:="MCDP_CUV";
+                !MCO_GENERICO:=MCO_CUV;! No fuciona porque no está Igualando la Definción si no el valor de la Var
+                !RES_GENERICO:=RES_CUV;
+                !VAR_GENERICO:=VAR_CUV;
                 
                 !Solve MCDP_GENERICO;
-                Solve MCDP_CUV;
+                !Solve MCDP_CUV;
             }
         }
         Procedure SolucionMCDP_SUV {
@@ -2573,6 +2576,39 @@ Model MCDP {
                     ElapsedTime := CurrentToMoment( [tick], StartTime );
             }
         }
+        Procedure TestingRunTimeIdentifiers {
+            Body: {
+                !CalculoConjuntos;
+                !CalculoConectividadRed;
+                !InicializacionVariables;
+                !Seleccion_PAB_Mas_Cercana_EDS;
+                !Calculo_Reducc_Dom_Conectividad;
+                !Calculo_Reducc_Dom_PFICT;
+                
+                !MyLib:= me::CreateLibrary("RunTimeLibrary_1","rlt1");
+                !MyVar:= me::Create("FuncionObjetivoGenerica", 'Variable', MyLib);
+                !me::Delete(MyLib)
+                
+                MCO_DEFINITION:=ME::GetAttribute(MCO_CUV,'Definition');
+                !me::Create(
+                !"MCO_CUV_1", ! (input) a string
+                !newType, ! (input) an element
+                !parentId, ! (input) an element
+                !pos ! (optional) an integer
+                
+                
+                !ME::SetAttribute(MCO_CUV,'Definition',"10");
+                
+                !ModeloActual:="MCDP_CUV";
+                !MCO_GENERICO:=MCO_CUV;! No fuciona porque no está Igualando la Definción si no el valor de la Var
+                !RES_GENERICO:=RES_CUV;
+                !VAR_GENERICO:=VAR_CUV;
+                
+                !Solve MCDP_GENERICO;
+                !Solve MCDP_CUV;
+            }
+        }
+        Procedure AlmacenarEstadisticasCorrida2;
         DeclarationSection Parametros_Experimentos {
             Quantity SI_Time_Duration {
                 BaseUnit: s;
@@ -2581,6 +2617,12 @@ Model MCDP {
             }
             StringParameter StartTime {
                 Comment: "\"Time the stopwatch was started\"";
+            }
+            ElementParameter MyLib {
+                Range: AllIdentifiers;
+            }
+            ElementParameter MyVar {
+                Range: AllVariables;
             }
             Parameter ElapsedTime {
                 Unit: s;

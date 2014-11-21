@@ -6,7 +6,7 @@ infeasibility_finder on
 rounding_compatibility Aimms_3_7
 solution_listing 1
 solver_listing 1
-time_limit 5
+time_limit 10
 * AOA
 * CBC 2.8.0
 * CONOPT 3.14V
