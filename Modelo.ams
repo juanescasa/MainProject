@@ -1778,6 +1778,11 @@ Model MCDP {
                     Text: "Promedio de tiempos de servicio en todas las pantas ";
                     Definition: sum( (k,i in NPA), TSER(i,k))/[CARD(VEH)*CARD(NPA)];
                 }
+                Parameter DECA {
+                    IndexDomain: (i,m,t);
+                    Text: "Demanda menos capacidad de almacenamiento de un producto en un periodo";
+                    Definition: CAPS(i,m)-DEMA(i,m,t);
+                }
                 ElementParameter ENPP {
                     IndexDomain: j;
                     Text: "Nodo de pernoctación i  a sociado al nodo origen j";
@@ -1835,10 +1840,24 @@ Model MCDP {
             }
             Procedure Validacion_INVI_CAPS {
                 Body: {
+                    
                     !empty MsjeValidacion;
                     for (i in NCL, m in PRC(i))  do
                             if INVI(i,m) > CAPS(i,m) then
                                     MsjeValidacion := MsjeValidacion + "\n" + "El Inventario Inicial de  "  + m +" en el nodo "  + i +" es mayor que su capacidad de almacenamiento " ;
+                            endif;
+                    endfor;
+                    !dialogerror  ( MsjeValidacion );
+                }
+                Comment: "Revisado";
+            }
+            Procedure Validacion_DEMA_CAPS {
+                Body: {
+                    !empty MsjeValidacion;
+                    
+                    for (i in NCL, m in PRC(i), t)  do
+                            if DEMA(i,m,t) > CAPS(i,m) then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "La demanda de "  + m +" en el nodo "  + i +" es mayor que su capacidad de almacenamiento en el periodo "+ t ;
                             endif;
                     endfor;
                     !dialogerror  ( MsjeValidacion );
@@ -2291,33 +2310,13 @@ Model MCDP {
         }
         Procedure SolucionMCDP_CUV {
             Body: {
-                !CalculoConjuntos;
-                !CalculoConectividadRed;
-                !InicializacionVariables;
-                !Seleccion_PAB_Mas_Cercana_EDS;
-                !Calculo_Reducc_Dom_Conectividad;
-                !Calculo_Reducc_Dom_PFICT;
-                
-                MyLib:= me::CreateLibrary("RunTimeLibrary_1","rlt1");
-                
-                
-                !!MCO_DEFINITION:=ME::GetAttribute(MCO_CUV,'Definition');
-                !me::Create(
-                !"MCO_CUV_1", ! (input) a string
-                !newType, ! (input) an element
-                !parentId, ! (input) an element
-                !pos ! (optional) an integer
-                
-                
-                !ME::SetAttribute(MCO_CUV,'Definition',"10");
-                
-                !ModeloActual:="MCDP_CUV";
-                !MCO_GENERICO:=MCO_CUV;! No fuciona porque no está Igualando la Definción si no el valor de la Var
-                !RES_GENERICO:=RES_CUV;
-                !VAR_GENERICO:=VAR_CUV;
-                
-                !Solve MCDP_GENERICO;
-                !Solve MCDP_CUV;
+                CalculoConjuntos;
+                CalculoConectividadRed;
+                InicializacionVariables;
+                Seleccion_PAB_Mas_Cercana_EDS;
+                Calculo_Reducc_Dom_Conectividad;
+                Calculo_Reducc_Dom_PFICT;
+                Solve MCDP_CUV;
             }
         }
         Procedure SolucionMCDP_SUV {
@@ -2328,13 +2327,15 @@ Model MCDP {
                 Seleccion_PAB_Mas_Cercana_EDS;
                 Calculo_Reducc_Dom_Conectividad;
                 Calculo_Reducc_Dom_PFICT;
-                
-                ModeloActual:=" MCDP_SUV";
+                Solve MCDP_SUV;
+            }
+            Comment: {
+                "ModeloActual:=\" MCDP_SUV\";
                 MCO_GENERICO:=MCO_SUV; ! No fuciona porque no está Igualando la Definción si no el valor de la Var
                 RES_GENERICO:=RES_SUV;
                 VAR_GENERICO:=VAR_SUV;
                 
-                Solve MCDP_GENERICO;
+                Solve MCDP_GENERICO;"
             }
         }
         Procedure SolucionMCDP_CUV_PDT {
@@ -2589,7 +2590,7 @@ Model MCDP {
                 !MyVar:= me::Create("FuncionObjetivoGenerica", 'Variable', MyLib);
                 !me::Delete(MyLib)
                 
-                MCO_DEFINITION:=ME::GetAttribute(MCO_CUV,'Definition');
+                !MCO_DEFINITION:=ME::GetAttribute(MCO_CUV,'Definition');
                 !me::Create(
                 !"MCO_CUV_1", ! (input) a string
                 !newType, ! (input) an element
@@ -2686,9 +2687,25 @@ Model MCDP {
                 Spreadsheet::RetrieveParameter( NombreLibroCorridas, ParametroPruebalectura, "ParametroPruebalectura" );
             }
         }
-        Procedure Procedure_1;
     }
     Procedure MainInitialization;
+    Procedure NumeroProcesadores {
+        Body: {
+            if EnvironmentGetString("NUMBER_OF_PROCESSORS", NUPR) then
+                    if val(NUPR) <= 0 then
+                        raise error "Could not determine number of processors" ;
+                    endif ;
+                    DialogMessage("Number of processors = " + NUPR) ;
+                else
+                    raise error "Could not determine number of processors" ;
+                endif ;
+        }
+    }
+    DeclarationSection ParametrosProcesadores {
+        StringParameter NUPR {
+            Text: "Numero de Procesadores";
+        }
+    }
     Procedure MainExecution {
         Body: {
             !SolucionMCDP_SUV;

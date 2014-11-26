@@ -17,4 +17,5 @@
 	<Page Name="MensajeDeError" PageGUID="CE4A7067-108E-4ED8-9D8E-86419EF39C73" />
 	<Page Name="LecturadeDatos" PageGUID="8D2E6708-05D5-4DA8-92CC-EB61D663FC93" />
 	<Page Name="[Data Page] ATR" PageGUID="2ACC0451-4404-4F7C-9EAE-D5699460DC4E" />
+	<Page Name="[Data Page] DECA" PageGUID="64048F3D-75B9-429E-A9A3-3C137FAC70C9" />
 </TemplateManager>
