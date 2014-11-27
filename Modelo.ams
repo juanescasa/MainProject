@@ -1642,7 +1642,7 @@ Model MCDP {
                 }
                 Parameter SCON2 {
                     IndexDomain: (i);
-                    Text: "Conectividdad de EDS con PAB";
+                    Text: "Conectividdad de alguna PAB con EDS";
                     Definition: {
                         SUM (j IN NPA, PCON(j,i))
                         !SUM (j IN NPA, PCON(i,j))
@@ -1893,6 +1893,57 @@ Model MCDP {
                 }
             }
             Procedure Validacion_CONECTIVIDAD {
+                Body: {
+                    Definicion_ENPP;
+                    !empty MsjeValidacion, AUXI2;
+                    for i IN NCL do
+                        AUXI2:=0;
+                        if SCON1(i)=0 then !Si no hay posibilidades de salir de i a una planta
+                            for j IN NPE do !Busque si hay posibilidades de ir a un nodo de pernoctacion
+                                    if PCON(i,j)=1 then !Si encuentra dicho nodo de pernoctacion
+                                            if SCON1(ENPP(j))>0 then !Pregunte si el nodo origen asociado al nodo de pernoctacion j se conecta con una planta
+                                                    AUXI2:=1; !Hay conectividad
+                                                    break;
+                                            endif;
+                                    endif;
+                            endfor;
+                            If  AUXI2=0 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "Del nodo "  + i +" No hay forma de volver a una planta de abastecimiento, ni directo, ni a traves de un nodo de pernoctacion" ;
+                            endif;
+                         endif;
+                    endfor;
+                    !dialogerror (MsjeValidacion);
+                    
+                    
+                    
+                    
+                    !empty AUXI2, MsjeValidacion;
+                    for i IN NCL do
+                        AUXI2:=0;
+                        if SCON2(i)=0 then !Si no hay posibilidades llegar a la EDS desde una Planta
+                            for j IN NOP do !Busque si hay posibilidades llegar a la  EDS desde un nodo origen
+                                    if PCON(j,i)=1 then !Si encuentra dicho nodo origen
+                                            if SCON2(ENPP2(j))>0 then !Pregunte si el nodo de pernoctación asociado al nodo de origen j se conecta con una planta
+                                                    AUXI2:=1; !Hay conectividad
+                                                    break;
+                                            endif;
+                                    endif;
+                            endfor;
+                            If  AUXI2=0 then
+                                    MsjeValidacion := MsjeValidacion + "\n" + "Al Nodo "  + i +" No hay forma de llegar desde una  planta de abastecimiento, ni directo, ni a traves de un nodo origen" ;
+                            endif;
+                         endif;
+                    endfor;
+                    !dialogerror (MsjeValidacion)
+                }
+                Comment: {
+                    "Revisado
+                    Valida que exista conectividad de una PAB a una EDS. La conectividad Puede ser directa o indirecta.
+                    (Directa si se viaja directo a la planta, e indirecta si se viaja primero a un nodo de pernoctación)
+                    El MODELO  supone que de una planta de Abastecimiento a una estación puedo llegar en menos de dos periodos."
+                }
+            }
+            Procedure Validacion_CONECTIVIDAD_TIEMPO {
                 Body: {
                     Definicion_ENPP;
                     !empty MsjeValidacion, AUXI2;
