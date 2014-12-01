@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <TemplateManager>
+	<Template Name="[Data Page] DECA" PageGUID="64048F3D-75B9-429E-A9A3-3C137FAC70C9" />
 	<Page Name="2.Parametros" PageGUID="414D9EBD-4544-427F-BF8C-C364483C836F" />
 	<Page Name="3.Variables" PageGUID="EF04A98D-7038-4F16-9372-7B8925F6EC31" Marked="true" />
 	<Page Name="5.Mapa y Gantt" PageGUID="C4D9C82F-C636-487B-B7E3-1E1AEB031E98" />
@@ -17,5 +18,5 @@
 	<Page Name="MensajeDeError" PageGUID="CE4A7067-108E-4ED8-9D8E-86419EF39C73" />
 	<Page Name="LecturadeDatos" PageGUID="8D2E6708-05D5-4DA8-92CC-EB61D663FC93" />
 	<Page Name="[Data Page] ATR" PageGUID="2ACC0451-4404-4F7C-9EAE-D5699460DC4E" />
-	<Page Name="[Data Page] DECA" PageGUID="64048F3D-75B9-429E-A9A3-3C137FAC70C9" />
+	<Page Name="Experimentos" PageGUID="E5EEC028-3DAF-472A-98E7-46753C815F79" />
 </TemplateManager>

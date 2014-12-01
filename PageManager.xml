@@ -17,6 +17,6 @@
 		<Page Name="[Data Page] CCIV" PageGUID="105F2BB1-E327-4123-BEBA-8F9FA93626C7" />
 		<Page Name="[Data Page] PCON" PageGUID="F284A19E-E454-49B5-B3F8-E8B303BD4E36" />
 		<Page Name="[Data Page] ATR" PageGUID="2ACC0451-4404-4F7C-9EAE-D5699460DC4E" />
-		<Page Name="[Data Page] DECA" PageGUID="64048F3D-75B9-429E-A9A3-3C137FAC70C9" />
 	</Page>
+	<Page Name="Experimentos" PageGUID="E5EEC028-3DAF-472A-98E7-46753C815F79" />
 </PageManager>

@@ -874,6 +874,11 @@ Model MCDP {
                 Definition: PEPA*CDUV(v);
             }
         }
+        DeclarationSection ParametrosSOS {
+            Parameter W_APE {
+                IndexDomain: (i,m,l,t);
+            }
+        }
         Section Variables_Modelo {
             DeclarationSection Variables_Asignacion {
                 Variable AVI {
@@ -885,9 +890,6 @@ Model MCDP {
                     IndexDomain: (i,m,l,t)|(i in NIL(l) and m in PRC(i));
                     Text: "Asignación producto m al compartimiento l en el nodo i en t";
                     Range: binary;
-                    Definition: {
-                        !|(i in NFC and m in PRC(i))
-                    }
                 }
                 Variable AVE {
                     IndexDomain: (k,t);
@@ -951,6 +953,16 @@ Model MCDP {
                 Constraint AUPC {
                     IndexDomain: (i,l,t)|(i in NIL(l));
                     Text: "Asignación único producto a compartimiento en nodo de intercambio";
+                    Definition: sum(m |m in PRO, APE(i,m,l,t))<=1;
+                    Comment: {
+                        "A un compartimiento se le asigna un único producto.
+                        !sum((i in NCL, m in PRO), APE(i,m,l,t))<=1"
+                    }
+                }
+                Constraint AUPC_SOS {
+                    IndexDomain: (i,l,t)|(i in NIL(l));
+                    Text: "Asignación único producto a compartimiento en nodo de intercambio";
+                    Property: Sos1;
                     Definition: sum(m |m in PRO, APE(i,m,l,t))<=1;
                     Comment: {
                         "A un compartimiento se le asigna un único producto.
@@ -1138,6 +1150,12 @@ Model MCDP {
                     Text: "Salida del origen en periodo inicial";
                     Definition: sum(j in NVV(i,k), ATR(i,j,k,t))= AVE(k,t);
                 }
+                Constraint SNOR1_SOS {
+                    IndexDomain: (i,k,t)|(i in NOI(k) and t in PEI);
+                    Text: "Salida del origen en periodo inicial";
+                    Property: Sos1;
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))= AVE(k,t);
+                }
                 Constraint AVOO1 {
                     IndexDomain: (i,k,t)|(i in NOI(k) and t in PEI);
                     Text: "Asignacion de visita obligatoria a nodo origen";
@@ -1147,34 +1165,171 @@ Model MCDP {
                     IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
                     Text: "Salidad en el nodo origen en periodos despues del inicial";
                     Definition: sum(j in NVV(i,k), ATR(i,j,k,t))<=AVE(k,t);
-                    Comment: "Si no utilizo el vehículo no debo salir del nodo origen del periodo";
+                    Comment: {
+                        "Si no utilizo el vehículo no debo salir del nodo origen del periodo
+                        
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVE(k,t). Esta restriccion no es correcta porque solo se pude Salir de un nodo origen. Esta resticción obligaría a salir de dos nodos origenes. Se debe corregir como
+                        !Si AVE=0 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= 0
+                        !sum(j in NVI(i), ATR(i,j,k,t))>=0 – AVE(k,t)
+                        !sum(j in NVI(i), ATR(i,j,k,t))<=0  + AVE(k,t)
+                        !
+                        !Si AVE=1 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVI(i,k,t)
+                        !
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))>= AVI(i,k,t) –M*(1-AVE(k,t))
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))<= AVI(i,k,t) +M*(1-AVE(k,t))
+                        !
+                        !Para cada vehiculo, y cada periodo mayor al inicial.
+                        !Sum (i in NOK(k), AVI(i,k,t))=1
+                        !"
+                    }
+                }
+                Constraint SNOR2_SOS {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))<=AVE(k,t);
+                    Comment: {
+                        "Si no utilizo el vehículo no debo salir del nodo origen del periodo
+                        
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVE(k,t). Esta restriccion no es correcta porque solo se pude Salir de un nodo origen. Esta resticción obligaría a salir de dos nodos origenes. Se debe corregir como
+                        !Si AVE=0 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= 0
+                        !sum(j in NVI(i), ATR(i,j,k,t))>=0 – AVE(k,t)
+                        !sum(j in NVI(i), ATR(i,j,k,t))<=0  + AVE(k,t)
+                        !
+                        !Si AVE=1 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVI(i,k,t)
+                        !
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))>= AVI(i,k,t) –M*(1-AVE(k,t))
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))<= AVI(i,k,t) +M*(1-AVE(k,t))
+                        !
+                        !Para cada vehiculo, y cada periodo mayor al inicial.
+                        !Sum (i in NOK(k), AVI(i,k,t))=1
+                        !"
+                    }
                 }
                 Constraint SNOR3 {
                     IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
                     Text: "Salidad en el nodo origen en periodos despues del inicial";
                     Definition: sum(j in NVV(i,k), ATR(i,j,k,t))>=AVI(i,k,t)-MBIN*(1-AVE(k,t));
-                    Comment: "Si utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo";
+                    Comment: {
+                        "Si utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo
+                        
+                        
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVE(k,t). Esta restriccion no es correcta porque solo se pude Salir de un nodo origen. Esta resticción obligaría a salir de dos nodos origenes. Se debe corregir como
+                        !Si AVE=0 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= 0
+                        !sum(j in NVI(i), ATR(i,j,k,t))>=0 – AVE(k,t)
+                        !sum(j in NVI(i), ATR(i,j,k,t))<=0  + AVE(k,t)
+                        !
+                        !Si AVE=1 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVI(i,k,t)
+                        !
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))>= AVI(i,k,t) –M*(1-AVE(k,t))
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))<= AVI(i,k,t) +M*(1-AVE(k,t))
+                        !
+                        !Para cada vehiculo, y cada periodo mayor al inicial.
+                        !Sum (i in NOK(k), AVI(i,k,t))=1
+                        !"
+                    }
+                }
+                Constraint SNOR3_SOS {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))>=AVI(i,k,t)-MBIN*(1-AVE(k,t));
+                    Comment: {
+                        "Si utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo
+                        
+                        
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVE(k,t). Esta restriccion no es correcta porque solo se pude Salir de un nodo origen. Esta resticción obligaría a salir de dos nodos origenes. Se debe corregir como
+                        !Si AVE=0 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= 0
+                        !sum(j in NVI(i), ATR(i,j,k,t))>=0 – AVE(k,t)
+                        !sum(j in NVI(i), ATR(i,j,k,t))<=0  + AVE(k,t)
+                        !
+                        !Si AVE=1 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVI(i,k,t)
+                        !
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))>= AVI(i,k,t) –M*(1-AVE(k,t))
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))<= AVI(i,k,t) +M*(1-AVE(k,t))
+                        !
+                        !Para cada vehiculo, y cada periodo mayor al inicial.
+                        !Sum (i in NOK(k), AVI(i,k,t))=1
+                        !"
+                    }
                 }
                 Constraint SNOR4 {
                     IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
                     Text: "Salidad en el nodo origen en periodos despues del inicial";
                     Definition: sum(j in NVV(i,k), ATR(i,j,k,t))<=AVI(i,k,t)+MBIN*(1-AVE(k,t));
-                    Comment: "i utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo";
+                    Comment: {
+                        "i utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo
+                        
+                        
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVE(k,t). Esta restriccion no es correcta porque solo se pude Salir de un nodo origen. Esta resticción obligaría a salir de dos nodos origenes. Se debe corregir como
+                        !Si AVE=0 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= 0
+                        !sum(j in NVI(i), ATR(i,j,k,t))>=0 – AVE(k,t)
+                        !sum(j in NVI(i), ATR(i,j,k,t))<=0  + AVE(k,t)
+                        !
+                        !Si AVE=1 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVI(i,k,t)
+                        !
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))>= AVI(i,k,t) –M*(1-AVE(k,t))
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))<= AVI(i,k,t) +M*(1-AVE(k,t))
+                        !
+                        !Para cada vehiculo, y cada periodo mayor al inicial.
+                        !Sum (i in NOK(k), AVI(i,k,t))=1
+                        !"
+                    }
+                }
+                Constraint SNOR4_SOS {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))<=AVI(i,k,t)+MBIN*(1-AVE(k,t));
+                    Comment: {
+                        "i utilizo el vehículo debo salir del nodo inicial del vehículo en dicho periodo
+                        
+                        
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVE(k,t). Esta restriccion no es correcta porque solo se pude Salir de un nodo origen. Esta resticción obligaría a salir de dos nodos origenes. Se debe corregir como
+                        !Si AVE=0 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= 0
+                        !sum(j in NVI(i), ATR(i,j,k,t))>=0 – AVE(k,t)
+                        !sum(j in NVI(i), ATR(i,j,k,t))<=0  + AVE(k,t)
+                        !
+                        !Si AVE=1 ->
+                        !sum(j in NVI(i), ATR(i,j,k,t))= AVI(i,k,t)
+                        !
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))>= AVI(i,k,t) –M*(1-AVE(k,t))
+                        !sum(j in NVV(i,k), ATR(i,j,k,t))<= AVI(i,k,t) +M*(1-AVE(k,t))
+                        !
+                        !Para cada vehiculo, y cada periodo mayor al inicial.
+                        !Sum (i in NOK(k), AVI(i,k,t))=1
+                        !"
+                    }
                 }
                 Constraint AVOO2 {
                     IndexDomain: (k,t);
-                    Text: "Asignacion visita unica y obligatoria a nodo inicial";
+                    Text: "Asignacion visita unica y obligatoria para un nodo potencial origen";
                     Definition: sum(i in NOK(k), AVI(i,k,t))=1;
-                    Comment: "Solo se puede salir de un nodo origen potencial una vez";
+                }
+                Constraint AVOO2_SOS {
+                    IndexDomain: (k,t);
+                    Text: "Asignacion visita unica y obligatoria para un nodo potencial origen";
+                    Property: Sos1;
+                    Definition: sum(i in NOK(k), AVI(i,k,t))=1;
                 }
                 Constraint RVSA {
                     IndexDomain: (i,k,t)|(i in NIK(k));
                     Text: "Relacion visita nodo inicial - salida de nodo por algun tramo";
-                    Definition: {
-                        AVI(i,k,t)=sum(j in NVV(i,k), ATR(i,j,k,t))
-                        !esta restriccion se debe eliminar, si visito a un nodo inicial no necesariamente debo salir de el.
-                        !Puede que tenga que quedarme descansando todo el día allí
-                    }
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))=AVI(i,k,t);
+                    Comment: "Si visita el cliente entonces se debe salir del cliente por algun tramo";
+                }
+                Constraint RVSA_SOS {
+                    IndexDomain: (i,k,t)|(i in NIK(k));
+                    Text: "Relacion visita nodo inicial - salida de nodo por algun tramo";
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t))=AVI(i,k,t);
                     Comment: "Si visita el cliente entonces se debe salir del cliente por algun tramo";
                 }
                 Constraint ENSA {
@@ -1189,9 +1344,20 @@ Model MCDP {
                 Constraint RVLL {
                     IndexDomain: (j,k,t)|(j in NIK(k));
                     Text: "Relacion visita nodo - llegada de nodo por algun tramo";
-                    Definition: AVI(j,k,t)=sum(i in NLV(j,k), ATR(i,j,k,t));
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))=AVI(j,k,t);
+                }
+                Constraint RVLL_SOS {
+                    IndexDomain: (j,k,t)|(j in NIK(k));
+                    Text: "Relacion visita nodo - llegada de nodo por algun tramo";
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))=AVI(j,k,t);
                 }
                 Constraint LNPE1 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Text: "Llegada al nodo de pernoctacion";
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))<=AVE(k,t);
+                    Comment: "Si no utilizo el vehiculo en el periodo no llego al nodo de pernoctacion";
+                }
+                Constraint LNPE1_SOS {
                     IndexDomain: (j,k,t)|(j in NNK(k));
                     Text: "Llegada al nodo de pernoctacion";
                     Definition: sum(i in NLV(j,k), ATR(i,j,k,t))<=AVE(k,t);
@@ -1212,7 +1378,19 @@ Model MCDP {
                     Definition: sum(i in NLV(j,k), ATR(i,j,k,t))<=AVI(j,k,t)+MBIN*(1-AVE(k,t));
                     Comment: "Todo vehículo que se utilice debe llegar a algun nodo de pernoctacion en un periodo";
                 }
+                Constraint LNPE3_SOS {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Text: "Llegada al nodo de pernoctacion";
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))<=AVI(j,k,t)+MBIN*(1-AVE(k,t));
+                    Comment: "Todo vehículo que se utilice debe llegar a algun nodo de pernoctacion en un periodo";
+                }
                 Constraint LNPE4 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Text: "Llegada al nodo de pernoctacion";
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))>=AVI(j,k,t)-MBIN*(1-AVE(k,t));
+                    Comment: "Todo vehículo que se utilice debe llegar a algun nodo de pernoctacion en un periodo";
+                }
+                Constraint LNPE4_SOS {
                     IndexDomain: (j,k,t)|(j in NNK(k));
                     Text: "Llegada al nodo de pernoctacion";
                     Definition: sum(i in NLV(j,k), ATR(i,j,k,t))>=AVI(j,k,t)-MBIN*(1-AVE(k,t));
@@ -1221,6 +1399,13 @@ Model MCDP {
                 Constraint AVOP {
                     IndexDomain: (k,t);
                     Text: "Asignacion de visita obligatoria y unica a nodo de pernoctacion";
+                    Definition: sum(j in NNK(k), AVI(j,k,t))=1;
+                    Comment: "Solo se puede visitar un nodo de pernoctacion y es obligatorio en cada periodo";
+                }
+                Constraint AVOP_SOS {
+                    IndexDomain: (k,t);
+                    Text: "Asignacion de visita obligatoria y unica a nodo de pernoctacion";
+                    Property: Sos1;
                     Definition: sum(j in NNK(k), AVI(j,k,t))=1;
                     Comment: "Solo se puede visitar un nodo de pernoctacion y es obligatorio en cada periodo";
                 }
@@ -1259,6 +1444,13 @@ Model MCDP {
                     Definition: sum(j in NVV(i,k), ATR(i,j,k,t)) = 1;
                     Comment: "Nota: recuerde que SNOR2 no se tendrá en cuenta al hacer el conjunto de restricciones de este modelo matemático";
                 }
+                Constraint VRP_SNOR1_SOS {
+                    IndexDomain: (i,k,t)|(i in NOI(k) and t in PEI);
+                    Text: "Salida del origen en periodo inicial para Progrma Simpliificado VRP";
+                    Property: Sos1;
+                    Definition: sum(j in NVV(i,k), ATR(i,j,k,t)) = 1;
+                    Comment: "Nota: recuerde que SNOR2 no se tendrá en cuenta al hacer el conjunto de restricciones de este modelo matemático";
+                }
                 Constraint VRP_SNOR3y4 {
                     IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
                     Text: "Salidad en el nodo origen en periodos despues del inicial  para Progrma Simpliificado VRP";
@@ -1271,7 +1463,23 @@ Model MCDP {
                         ! usados tendran que cruzar este tramo.
                     }
                 }
+                Constraint VRP_SNOR3y4_SOS {
+                    IndexDomain: (i,k,t)|i in NOK(k) and t in PPR;
+                    Text: "Salidad en el nodo origen en periodos despues del inicial  para Progrma Simpliificado VRP";
+                    Definition: {
+                        sum(j in NVV(i,k), ATR(i,j,k,t))=AVI(i,k,t)
+                        
+                        !Ojo los tramos de Nodos origenes-Nodos Finales o pernoct, deben  tener costo cero, pero también se debe tener
+                        !cuidado con los casos en los que es necesario salir de un nodo origen e ir a pernoctar  debido a la larga distanca
+                        !de su próximo destino, en este último caso se debe cuidar de no poner en cero el costo del tramo porque vehículos a ser
+                        ! usados tendran que cruzar este tramo.
+                    }
+                }
                 Constraint VRP_LNPE3y4 {
+                    IndexDomain: (j,k,t)|(j in NNK(k));
+                    Definition: sum(i in NLV(j,k), ATR(i,j,k,t))=AVI(j,k,t);
+                }
+                Constraint VRP_LNPE3y4_SOS {
                     IndexDomain: (j,k,t)|(j in NNK(k));
                     Definition: sum(i in NLV(j,k), ATR(i,j,k,t))=AVI(j,k,t);
                 }
@@ -1348,9 +1556,22 @@ Model MCDP {
                 SubsetOf: AllConstraints;
                 Definition: {
                     data
-                        { APE  , CCNV , AUPC , APCL , CPPE , CAPP , RACV1, RACV2, RVIN , RCPA1, RCPA2, RAGV , BALI , BAVI , BAVC1, BAVC2, BAVO , BAVP1,
+                        { CCNV , AUPC , APCL , CPPE , CAPP , RACV1, RACV2, RVIN , RCPA1, RCPA2, RAGV , BALI , BAVI , BAVC1, BAVC2, BAVO , BAVP1,
                           BAVP2, BAVD1, BAVD2, SNOR1, AVOO1, SNOR2, SNOR3, SNOR4, AVOO2, RVSA , ENSA , RVLL , LNPE1, LNPE2, LNPE3, LNPE4, AVOP , DECP ,
-                          DEMP1, DEMP2, SVIS , DTFJ , DTIJ , MCO_CUV  }
+                          DEMP1, DEMP2, SVIS, DTFJ, DTIJ, MCO_CUV  }
+                          !Se quitó la Variable APE para ver si corre
+                          !Se penso en quitar  DTFJ y DTIJ por Redundantes, ya que se creó estaban incluias en definición de TLL,  Pero no es así por que los
+                          !tiempos de Inicio y finalizción de la Jornada  dependen del vehículo.
+                }
+            }
+            Set RES_CUV_SOS {
+                SubsetOf: AllConstraints;
+                Definition: {
+                    data
+                        { CCNV     , APCL     , CPPE     , CAPP     , RACV1    , RACV2    , RVIN     , RCPA1    , RCPA2    , RAGV     , BALI     ,
+                          BAVI     , BAVC1    , BAVC2    , BAVO     , BAVP1    , BAVP2    , BAVD1    , BAVD2    , AVOO1    , ENSA     , DECP     ,
+                          DEMP1    , DEMP2    , SVIS     , DTFJ     , DTIJ     , MCO_CUV  , AUPC_SOS , SNOR1_SOS, SNOR2_SOS, SNOR3_SOS, SNOR4_SOS,
+                          AVOO2_SOS, RVSA_SOS , RVLL_SOS , LNPE1_SOS, LNPE3_SOS, LNPE4_SOS, AVOP_SOS }
                 }
             }
             Set VAR_CUV {
@@ -1365,13 +1586,21 @@ Model MCDP {
                 Type: Automatic;
                 Comment: "Incluye las restricciones para decidir si un vehiculo es usado o no";
             }
+            MathematicalProgram MCDP_CUV_SOS {
+                Objective: MCO_CUV;
+                Direction: minimize;
+                Constraints: RES_CUV_SOS;
+                Variables: VAR_CUV;
+                Type: Automatic;
+                Comment: "Incluye las restricciones para decidir si un vehiculo es usado o no";
+            }
             Set RES_CUV_PDT {
                 SubsetOf: AllConstraints;
                 Definition: {
                     data
-                        { APE  , CCNV , AUPC , APCL , CPPE , CAPP , RACV1, RACV2, RVIN , RCPA1, RCPA2, RAGV , BALI , BAVI , BAVC1, BAVC2, BAVO , BAVP1,
+                        { CCNV , AUPC , APCL , CPPE , CAPP , RACV1, RACV2, RVIN , RCPA1, RCPA2, RAGV , BALI , BAVI , BAVC1, BAVC2, BAVO , BAVP1,
                           BAVP2, BAVD1, BAVD2, SNOR1, AVOO1, SNOR2, SNOR3, SNOR4, AVOO2, RVSA , ENSA , RVLL , LNPE1, LNPE2, LNPE3, LNPE4, AVOP , DECP ,
-                          DEMP1, DEMP2, SVIS , DTFJ , DTIJ , MCO_CUV, MCO_CUV_PDT, FOT   }
+                          DEMP1, DEMP2, SVIS , DTFJ , DTIJ , MCO_CUV, MCO_CUV_PDT, FOT}
                 }
             }
             Set VAR_CUV_PDT {
@@ -1389,6 +1618,21 @@ Model MCDP {
                     Incluye en la FO la perturbación para evitar el degeneramiento por las variables de tiempo"
                 }
             }
+            Set RES_SUV_SOS {
+                SubsetOf: AllConstraints;
+                Definition: {
+                    data
+                        { CCNV           , APCL           , CPPE           , CAPP           , SRACV1         , RACV2          , RVIN           ,
+                          RCPA1          , RCPA2          , BALI           , BAVI           , BAVC1          , BAVC2          , BAVO           ,
+                          BAVP1          , BAVP2          , AVOO1          , ENSA           , DECP           , SVIS           , DTFJ           ,
+                          DTIJ           , MCO_SUV        , AUPC_SOS       , AVOO2_SOS      , RVSA_SOS       , RVLL_SOS       , AVOP_SOS       ,
+                          VRP_SNOR1_SOS  , VRP_SNOR3y4_SOS, VRP_LNPE3y4_SOS }
+                }
+                Comment: {
+                    "!Se penso en quitar  DTFJ y DTIJ por Redundantes, ya que se creó estaban incluias en definición de TLL,  Pero no es así por que los
+                         !tiempos de Inicio y finalizción de la Jornada  dependen del vehículo."
+                }
+            }
             Set RES_SUV {
                 SubsetOf: AllConstraints;
                 Definition: {
@@ -1396,7 +1640,9 @@ Model MCDP {
                         { CCNV       , AUPC       , APCL       , CPPE       , CAPP         , SRACV1     , RACV2      , RVIN       ,
                           RCPA1      , RCPA2      , BALI       , BAVI       , BAVC1      , BAVC2      , BAVO       , BAVP1      , BAVP2      ,
                           AVOO1      , AVOO2      , RVSA       , ENSA       , RVLL       , AVOP       , DECP       , VRP_SNOR1  , VRP_SNOR3y4,
-                          VRP_LNPE3y4, SVIS       , DTFJ       , DTIJ      , MCO_SUV    }
+                          VRP_LNPE3y4, SVIS, DTFJ, DTIJ, MCO_SUV    }
+                          ! !Se penso en quitar  DTFJ y DTIJ por Redundantes, ya que se creó estaban incluias en definición de TLL,  Pero no es así por que los
+                          !tiempos de Inicio y finalizción de la Jornada  dependen del vehículo.
                 }
             }
             Set VAR_SUV {
@@ -1411,6 +1657,14 @@ Model MCDP {
                 Type: MIP;
                 Comment: "No Incluye las restricciones para decidir si un vehiculo es usado o no";
             }
+            MathematicalProgram MCDP_SUV_SOS {
+                Objective: MCO_SUV;
+                Direction: minimize;
+                Constraints: RES_SUV_SOS;
+                Variables: VAR_SUV;
+                Type: MIP;
+                Comment: "No Incluye las restricciones para decidir si un vehiculo es usado o no";
+            }
             Set RES_SUV_PDT {
                 SubsetOf: AllConstraints;
                 Definition: {
@@ -1418,7 +1672,9 @@ Model MCDP {
                         { CCNV       , AUPC       , APCL       , CPPE       , CAPP         , SRACV1     , RACV2      , RVIN       ,
                           RCPA1      , RCPA2      , BALI       , BAVI       , BAVC1      , BAVC2      , BAVO       , BAVP1      , BAVP2      ,
                           AVOO1      , AVOO2      , RVSA       , ENSA       , RVLL       , AVOP       , DECP       , VRP_SNOR1  , VRP_SNOR3y4,
-                          VRP_LNPE3y4, SVIS       , DTFJ       , DTIJ      , MCO_SUV , MCO_SUV , FOT   }
+                          VRP_LNPE3y4, SVIS, MCO_SUV, DTFJ, DTIJ, MCO_SUV, FOT   }
+                          ! !Se penso en quitar  DTFJ y DTIJ por Redundantes, ya que se creó estaban incluias en definición de TLL,  Pero no es así por que los
+                          !tiempos de Inicio y finalizción de la Jornada  dependen del vehículo.
                 }
             }
             Set VAR_SUV_PDT {
@@ -1432,31 +1688,6 @@ Model MCDP {
                 Variables: VAR_SUV_PDT;
                 Type: Automatic;
                 Comment: "No Incluye las restricciones para decidir si un vehiculo es usado o no";
-            }
-            MathematicalProgram MCDP_GENERICO {
-                Objective: MCO_GENERICO;
-                Direction: minimize;
-                Constraints: RES_GENERICO;
-                Variables: VAR_GENERICO;
-                Type: Automatic;
-            }
-            Set RES_GENERICO {
-                SubsetOf: AllConstraints;
-            }
-            Set VAR_GENERICO {
-                SubsetOf: AllVariables;
-            }
-            ElementParameter MCO_EP {
-                Range: AllIdentifiers;
-                Definition: {
-                    'MCO_CUV' ;
-                }
-            }
-            ElementParameter DEFINITIO_EP {
-                Range: AllAttributeNames;
-                Definition: {
-                    'definition' ;
-                }
             }
         }
     }
@@ -1574,7 +1805,7 @@ Model MCDP {
                 Endfor;
             }
         }
-        Procedure Calculo_Reducc_Dom_Conectividad {
+        Procedure Calculo_Reducc_Dom_Conectividad_SUV {
             Body: {
                 !1.
                 !CÁLCULO DE PROCEDIMIENTOS PARA REDUCCIÓN DE DOMINIO:
@@ -1600,6 +1831,40 @@ Model MCDP {
                                                            !las jornadas son similares
                                         PCON(i,j):=0
                         endif;
+                endfor;
+            }
+        }
+        Procedure Calculo_Reducc_Dom_Conectividad_CUV {
+            Body: {
+                !1.
+                !CÁLCULO DE PROCEDIMIENTOS PARA REDUCCIÓN DE DOMINIO:
+                        ! 1. No permitir visitas entre EDS “lejanas”, en distancia
+                for (i,j) | (i IN NCL and j IN NCL) do
+                        if DIST(i,j)> MAXD then
+                                PCON(i,j):=0
+                        endif;
+                endfor;
+                !2. De una EDS no salgo a un nodo de pernoctación que este más lejos (con un exceso porcentual) de lo que
+                !la EDS está de la planta de abastecimiento. Con esto debo garantizar que exista un nodo de pernoctación más
+                !cercano a la planta que cualquier EDS.
+                for (i,j,jj) |i in NCL  and j in NPE and jj in PCE(i) do !También se puede dejar el set PMCE(i) en vez de PMC
+                        if TIVI(i,j)>EXCP*TIVI(i,jj) then ! Si el tiempo de viaje de la  EDS i  al Nod pernocta j  es mayor que
+                                                          !el tiempo de viaje  de la  EDS i  a la planta jj (que es la planta   más cercana a i) en un exceso porcentual definido, entonces elimine la conectividad
+                                PCON(i,j):=0
+                        endif;
+                endfor;
+                !3.Desde un nodo no se puede ir a un nodo que esté a un tiempo mayor que la jornada de trabajo diaria.
+                !Ojo la Regla se deb cumplir con una Hogura, una distancia  lo suficientemente grande!
+                for (i,j) do
+                        if TIVI(i,j) > PDJO + ADTJ then    !Tiempo de la jornada que trabaja más en excedente. (nota, se podría envitar el k y t ya que
+                                                           !las jornadas son similares
+                                        PCON(i,j):=0
+                        endif;
+                endfor;
+                
+                !NO tiene sentido ir de un Nodo origen a su Nodo de Pernoctación Asociado
+                for (i,j) | (i in NOP) and (j in NNO(i)) do
+                	PCON(i,j):=0
                 endfor;
             }
         }
@@ -2321,7 +2586,7 @@ Model MCDP {
                     CalculoConectividadRed;
                     !Ojo estos Procedimientos solo deben dejarse activos cuando quiero trabajar con conecividad reducida
                     Seleccion_PAB_Mas_Cercana_EDS;
-                    Calculo_Reducc_Dom_Conectividad;
+                    Calculo_Reducc_Dom_Conectividad_SUV;
                     Calculo_Reducc_Dom_PFICT;
                     
                     Definicion_ENPP;
@@ -2361,24 +2626,89 @@ Model MCDP {
         }
         Procedure SolucionMCDP_CUV {
             Body: {
+                StartStopwatch;
+                SelectSolver;!Establece el solver que se especifique desde el Page Manager
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
                 Seleccion_PAB_Mas_Cercana_EDS;
-                Calculo_Reducc_Dom_Conectividad;
-                Calculo_Reducc_Dom_PFICT;
+                
+                if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_Conectividad_CUV;
+                endif ;
+                if RedDomPlaFI="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_PFICT;
+                endif;
+                
+                
                 Solve MCDP_CUV;
+                StopStowatch;
+            }
+        }
+        Procedure SolucionMCDP_CUV_SOS {
+            Body: {
+                StartStopwatch;
+                SelectSolver;!Establece el solver que se especifique desde el Page Manager
+                CalculoConjuntos;
+                CalculoConectividadRed;
+                InicializacionVariables;
+                Seleccion_PAB_Mas_Cercana_EDS;
+                
+                if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_Conectividad_CUV;
+                endif ;
+                if RedDomPlaFI="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_PFICT;
+                endif;
+                
+                
+                Solve MCDP_CUV_SOS;
+                StopStowatch;
             }
         }
         Procedure SolucionMCDP_SUV {
             Body: {
+                StartStopwatch;
+                SelectSolver;!Establece el solver que se especifique desde el Page Manager
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
                 Seleccion_PAB_Mas_Cercana_EDS;
-                Calculo_Reducc_Dom_Conectividad;
-                Calculo_Reducc_Dom_PFICT;
+                if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_Conectividad_SUV;
+                endif ;
+                if RedDomPlaFI="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_PFICT;
+                endif;
                 Solve MCDP_SUV;
+                StopStowatch;
+            }
+            Comment: {
+                "ModeloActual:=\" MCDP_SUV\";
+                MCO_GENERICO:=MCO_SUV; ! No fuciona porque no está Igualando la Definción si no el valor de la Var
+                RES_GENERICO:=RES_SUV;
+                VAR_GENERICO:=VAR_SUV;
+                
+                Solve MCDP_GENERICO;"
+            }
+        }
+        Procedure SolucionMCDP_SUV_SOS {
+            Body: {
+                StartStopwatch;
+                SelectSolver;!Establece el solver que se especifique desde el Page Manager
+                CalculoConjuntos;
+                CalculoConectividadRed;
+                InicializacionVariables;
+                Seleccion_PAB_Mas_Cercana_EDS;
+                if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_Conectividad_SUV;
+                endif ;
+                if RedDomPlaFI="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_PFICT;
+                endif;
+                
+                Solve MCDP_SUV_SOS;
+                StopStowatch;
             }
             Comment: {
                 "ModeloActual:=\" MCDP_SUV\";
@@ -2391,25 +2721,65 @@ Model MCDP {
         }
         Procedure SolucionMCDP_CUV_PDT {
             Body: {
+                StartStopwatch;
+                SelectSolver;!Establece el solver que se especifique desde el Page Manager
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
                 Seleccion_PAB_Mas_Cercana_EDS;
-                Calculo_Reducc_Dom_Conectividad;
-                Calculo_Reducc_Dom_PFICT;
+                if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_Conectividad_SUV;
+                endif ;
+                if RedDomPlaFI="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_PFICT;
+                endif;
                 solve MCDP_CUV_PDT; !Incluye perturbación a la FO para evitar degeneración causada por el tiempo
                 !solve MCDPR_MinimizarCostos;
+                StopStowatch;
             }
         }
         Procedure SolucionMCDP_SUV_PDT {
             Body: {
+                StartStopwatch;
+                SelectSolver;!Establece el solver que se especifique desde el Page Manager
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
                 Seleccion_PAB_Mas_Cercana_EDS;
-                Calculo_Reducc_Dom_Conectividad;
-                Calculo_Reducc_Dom_PFICT;
+                if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_Conectividad_SUV;
+                endif ;
+                if RedDomPlaFI="SI" then !desde Page Manager se determina el StringParametro
+                	Calculo_Reducc_Dom_PFICT;
+                endif;
                 solve MCDP_SUV_PDT; !Incluye perturbación a la FO para evitar degeneración causada por el tiempo
+                StopStowatch;
+            }
+        }
+        Procedure SolucionMCDP {
+            Body: {
+                if ModeloActual='MCDP_CUV' then
+                	SolucionMCDP_CUV
+                endif;
+                
+                if ModeloActual='MCDP_SUV' then
+                	SolucionMCDP_SUV
+                endif;
+                
+                if ModeloActual='MCDP_SUV_PDT' then
+                	SolucionMCDP_SUV_PDT
+                endif;
+                
+                if ModeloActual='MCDP_CUV_PDT' then
+                	SolucionMCDP_CUV_PDT
+                endif;
+                
+                if ModeloActual='MCDP_CUV_SOS' then
+                	SolucionMCDP_CUV_SOS
+                endif;
+                if ModeloActual='MCDP_SUV_SOS' then
+                	SolucionMCDP_SUV_SOS
+                endif;
             }
         }
     }
@@ -2618,6 +2988,9 @@ Model MCDP {
                     StartTime := CurrentToString( "%c%y-%m-%d %H:%M:%S:%t");
             }
         }
+        Procedure SelectSolver {
+            Body: CurrentSolver('MIP'):=Solver_A;
+        }
         Procedure StopStowatch {
             Body: {
                 !Using the CurrentToMoment AIMMS function, we can ask for the number
@@ -2660,12 +3033,148 @@ Model MCDP {
                 !Solve MCDP_CUV;
             }
         }
-        Procedure AlmacenarEstadisticasCorrida2;
+        Procedure AlmacenarEstadisticasCorrida {
+            Body: {
+                if ModeloActual='MCDP_CUV' then
+                	MAXD_A:=MAXD;
+                	CantidadRestricciones:= MCDP_CUV.NumberOfConstraints;
+                	CantidadVariables:= MCDP_CUV.NumberOfVariables;
+                	iteraciones := MCDP_CUV.iterations;
+                	Nodos_a:=MCDP_CUV.nodes;
+                	BestLPBound:=MCDP_CUV.bestbound;
+                	BestSolution:=MCDP_CUV.Objective;
+                	Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                	SolvingTime:=MCDP_CUV.SolutionTime;
+                
+                elseif 	ModeloActual='MCDP_SUV' then
+                	MAXD_A:=MAXD;
+                	CantidadRestricciones:= MCDP_SUV.NumberOfConstraints;
+                	CantidadVariables:= MCDP_SUV.NumberOfVariables;
+                	iteraciones := MCDP_SUV.iterations;
+                	Nodos_a:=MCDP_SUV.nodes;
+                	BestLPBound:=MCDP_SUV.bestbound;
+                	BestSolution:=MCDP_SUV.Objective;
+                	Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                	SolvingTime:=MCDP_SUV.SolutionTime;
+                
+                elseif 	ModeloActual='MCDP_SUV_SOS' then
+                	MAXD_A:=MAXD;
+                	CantidadRestricciones:= MCDP_SUV_SOS.NumberOfConstraints;
+                	CantidadVariables:= MCDP_SUV_SOS.NumberOfVariables;
+                	iteraciones := MCDP_SUV_SOS.iterations;
+                	Nodos_a:=MCDP_SUV_SOS.nodes;
+                	BestLPBound:=MCDP_SUV_SOS.bestbound;
+                	BestSolution:=MCDP_SUV_SOS.Objective;
+                	Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                	SolvingTime:=MCDP_SUV_SOS.SolutionTime;
+                
+                elseif 	ModeloActual='MCDP_CUV_SOS' then
+                	MAXD_A:=MAXD;
+                	CantidadRestricciones:= MCDP_CUV_SOS.NumberOfConstraints;
+                	CantidadVariables:= MCDP_CUV_SOS.NumberOfVariables;
+                	iteraciones := MCDP_CUV_SOS.iterations;
+                	Nodos_a:=MCDP_CUV_SOS.nodes;
+                	BestLPBound:=MCDP_CUV_SOS.bestbound;
+                	BestSolution:=MCDP_CUV_SOS.Objective;
+                	Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                	SolvingTime:=MCDP_CUV_SOS.SolutionTime;
+                
+                elseif 	ModeloActual='MCDP_CUV_PDT' then
+                	MAXD_A:=MAXD;
+                	CantidadRestricciones:= MCDP_CUV_PDT.NumberOfConstraints;
+                	CantidadVariables:= MCDP_CUV_PDT.NumberOfVariables;
+                	iteraciones := MCDP_CUV_PDT.iterations;
+                	Nodos_a:=MCDP_CUV_PDT.nodes;
+                	BestLPBound:=MCDP_CUV_PDT.bestbound;
+                	BestSolution:=MCDP_CUV_PDT.Objective;
+                	Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                	SolvingTime:=MCDP_CUV_PDT.SolutionTime;
+                
+                elseif 	ModeloActual='MCDP_SUV_PDT' then
+                	MAXD_A:=MAXD;
+                	CantidadRestricciones:= MCDP_SUV_PDT.NumberOfConstraints;
+                	CantidadVariables:= MCDP_SUV_PDT.NumberOfVariables;
+                	iteraciones := MCDP_SUV_PDT.iterations;
+                	Nodos_a:=MCDP_SUV_PDT.nodes;
+                	BestLPBound:=MCDP_SUV_PDT.bestbound;
+                	BestSolution:=MCDP_SUV_PDT.Objective;
+                	Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                	SolvingTime:=MCDP_SUV_PDT.SolutionTime;
+                
+                endif;
+                
+                
+                
+                
+                
+                
+                !CantidadRestricciones:= MCDP_GENERICO.NumberOfConstraints;
+                !CantidadVariables:= MCDP_GENERICO.NumberOfVariables;
+                !Iteraciones := MCDP_GENERICO.iterations;
+                !Nodos_a:=MCDP_GENERICO.nodes;
+                !BestLPBound:=MCDP_GENERICO.bestbound;
+                !BestSolution:=MCDP_GENERICO.Objective;
+                !Gap:=abs(BestLPBound-BestSolution)/BestSolution;
+                !SolvingTime:=MCDP_GENERICO.SolutionTime;
+                !
+            }
+        }
+        Procedure IMprimirEstadisticos {
+            Body: {
+                AlmacenarEstadisticasCorrida;
+                
+                Spreadsheet::SetActiveSheet(NombreLibroCorridas,"Registros");
+                !Corre Macro
+                Spreadsheet::RunMacro(
+                NombreLibroCorridas, ! (input) scalar string expression
+                "RangosDinEstadisticos" ! (input) scalar string expression
+                );
+                
+                !Imprime en Excel
+                Spreadsheet::SetActiveSheet(NombreLibroCorridas,"Registros");
+                Spreadsheet::AssignValue(NombreLibroCorridas,ModeloActual,"Modelo" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,Solver_A,"Solver" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,ESCE,"Escenario");
+                Spreadsheet::AssignValue(NombreLibroCorridas,RedDomCon,"ReduccionDominioConectividad");
+                Spreadsheet::AssignValue(NombreLibroCorridas,RedDomPlaFI,"ReduccionDominioPlantaFicticia");
+                Spreadsheet::AssignValue(NombreLibroCorridas,CantidadRestricciones,"Restricciones" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, CantidadVariables, "Variables" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,Iteraciones , "Iteraciones" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, Nodos_a, "Nodos" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, BestLPBound, "BestLPBound" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,BestSolution , "BestSolution" );
+                Spreadsheet::AssignValue(NombreLibroCorridas,Gap, "Gap" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, SolvingTime, "SolvingTime" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, ElapsedTime, "TotalTime" );
+                Spreadsheet::AssignValue(NombreLibroCorridas, MAXD_A, "MaximaDistanciaDeConectividad" );
+            }
+        }
         DeclarationSection Parametros_Experimentos {
             Quantity SI_Time_Duration {
                 BaseUnit: s;
                 Conversions: tick -> s : # -> # / 100;
                 Comment: "Expresses the value for the duration of periods.";
+            }
+            Set RestriccionesSOS {
+                SubsetOf: AllConstraints;
+                Definition: {
+                    data
+                        { AUPC_SOS       , SNOR1_SOS      , SNOR2_SOS      , SNOR3_SOS      , SNOR4_SOS      , AVOO2_SOS      , RVSA_SOS       ,
+                          RVLL_SOS       , LNPE1_SOS      , LNPE3_SOS      , LNPE4_SOS      , AVOP_SOS       , VRP_SNOR1_SOS  , VRP_SNOR3y4_SOS,
+                          VRP_LNPE3y4_SOS }
+                }
+            }
+            Set Rest_SOS_Actual {
+                SubsetOf: RestriccionesSOS;
+            }
+            Set SolverSet {
+                SubsetOf: AllSolvers;
+            }
+            ElementParameter Solver_A {
+                Range: SolverSet;
+                Definition: {
+                    Element(SolverSet,1)!escoge el único elemento definido en el conjunto SolverSet desde la Interfaz
+                }
             }
             StringParameter StartTime {
                 Comment: "\"Time the stopwatch was started\"";
@@ -2680,9 +3189,26 @@ Model MCDP {
                 Unit: s;
             }
             StringParameter Caso;
-            StringParameter ModeloActual;
+            StringParameter RedDomCon {
+                Text: "Reducción dominio de Conectividad? Si o No";
+            }
+            StringParameter RedDomPlaFI {
+                Text: "Reducción dominio Planta Ficticia? Si o No";
+            }
+            Set ModActual {
+                SubsetOf: Modelos;
+                Text: "MOdelo que se acaba de Correr, este se define desde el Page Manager";
+            }
+            ElementParameter ModeloActual {
+                Range: Modelos;
+            }
+            StringParameter ModelosTot {
+                IndexDomain: mo;
+                Definition: {
+                    !data { M1 : "MCDP_CUV",  M2 : "MCDP_SUV",  M3 : "MCDP_CUV_PDT",  M4 : "MCDP_SUV_PDT" }
+                }
+            }
             Parameter MAXD_A;
-            StringParameter Solver_A;
             Parameter CantidadRestricciones;
             Parameter CantidadVariables;
             Parameter Iteraciones;
@@ -2700,42 +3226,9 @@ Model MCDP {
                 Definition: "AnalisisCorridas.xlsm";
             }
             Parameter ParametroPruebalectura;
-        }
-        Procedure AlmacenarEstadisticasCorrida {
-            Body: {
-                !MAXD_A:=MAXD;
-                CantidadRestricciones:= MCDP_GENERICO.NumberOfConstraints;
-                CantidadVariables:= MCDP_GENERICO.NumberOfVariables;
-                Iteraciones := MCDP_GENERICO.iterations;
-                Nodos_a:=MCDP_GENERICO.nodes;
-                BestLPBound:=MCDP_GENERICO.bestbound;
-                BestSolution:=MCDP_GENERICO.Objective;
-                Gap:=abs(BestLPBound-BestSolution)/BestSolution;
-                SolvingTime:=MCDP_GENERICO.SolutionTime;
-            }
-        }
-        Procedure IMprimirEstadisticos {
-            Body: {
-                Spreadsheet::RunMacro(
-                NombreLibroCorridas, ! (input) scalar string expression
-                "RangosDinEstadisticos" ! (input) scalar string expression
-                );
-                
-                Spreadsheet::SetActiveSheet(NombreLibroCorridas,"Registros" );
-                Spreadsheet::AssignValue(NombreLibroCorridas,CantidadRestricciones,"Restricciones" );
-                Spreadsheet::AssignValue(NombreLibroCorridas, CantidadVariables, "Variables" );
-                Spreadsheet::AssignValue(NombreLibroCorridas,Iteraciones , "Iteraciones" );
-                Spreadsheet::AssignValue(NombreLibroCorridas, Nodos_a, "Nodos" );
-                Spreadsheet::AssignValue(NombreLibroCorridas, BestLPBound, "BestLPBound" );
-                Spreadsheet::AssignValue(NombreLibroCorridas,BestSolution , "BestSolution" );
-                Spreadsheet::AssignValue(NombreLibroCorridas,Gap, "Gap" );
-                Spreadsheet::AssignValue(NombreLibroCorridas, SolvingTime, "SolvingTime" );
-            }
-        }
-        Procedure PruebaLecturaExcel {
-            Body: {
-                Spreadsheet::SetActiveSheet(NombreLibroCorridas,"Datos" );
-                Spreadsheet::RetrieveParameter( NombreLibroCorridas, ParametroPruebalectura, "ParametroPruebalectura" );
+            Set Modelos {
+                Index: mo;
+                Definition: data { MCDP_CUV,  MCDP_SUV,  MCDP_CUV_SOS,  MCDP_SUV_SOS, MCDP_CUV_PDT,  MCDP_SUV_PDT };
             }
         }
     }

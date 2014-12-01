@@ -6,19 +6,22 @@ infeasibility_finder on
 rounding_compatibility Aimms_3_7
 solution_listing 1
 solver_listing 1
+time_limit 180
 * AOA
 * CBC 2.8.0
 * CONOPT 3.14V
+* CPLEX 12.5.1
 * CPLEX 12.6
 "CPLEX 12.6".mps 1
+* CPOptimizer 12.5
 * CPOptimizer 12.6
+* GUROBI 5.5
 * GUROBI 5.6
 "GUROBI 5.6".MPS 2
 "GUROBI 5.6".MIP_calculate_basis_and_sensitivities 0
 "GUROBI 5.6".RINS_heuristic_frequency 0
 * IPOPT 3.11
 * MINOS
-* PATH 4.6
 * SNOPT 7.2
 * XA 15
 * NETSOL
