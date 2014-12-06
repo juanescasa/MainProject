@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
+<<<<<<< HEAD
 <Page Version="4000" TimeStamp="2014-12-03 01:23:30">
+=======
+<Page Version="4000" TimeStamp="2014-11-29 17:55:35">
+>>>>>>> origin/master
 	<PageEditSize Type="Inherited" />
 	<ProjectUUID>91ACE854-C710-4530-99D8-214FB3F5EBA3</ProjectUUID>
 	<TemplatesTabOrderPosition>1</TemplatesTabOrderPosition>
@@ -153,19 +157,58 @@ Problema MIP (Seleccione solamente uno)</StaticText>
 			<Identifier>ModeloActual</Identifier>
 		</ExplicitIdentifier>
 	</PageObject>
+<<<<<<< HEAD
 	<UsedReferences>
 		<Model>
 			<Symbol>AllMathematicalPrograms</Symbol>
+=======
+	<PageObject Type="Selection Object">
+		<SelectionType>CheckBoxes</SelectionType>
+		<Location top="210" left="570" bottom="372" right="864" />
+		<TabOrder>10</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<TextShown>ElementName</TextShown>
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<ExplicitIdentifier>
+			<Identifier>Rest_SOS_Actual( RestriccionesSOS )</Identifier>
+		</ExplicitIdentifier>
+	</PageObject>
+	<PageObject Type="Table">
+		<Location top="102" left="78" bottom="144" right="186" />
+		<TabOrder>15</TabOrder>
+		<Font GUID="00000000-0000-0000-0000-000000000001" Name="Main Font" />
+		<Border Style="InShadow" Width="2" MarginTop="5" MarginRight="5" MarginBottom="5" MarginLeft="5" />
+		<BackgroundColor RGB="#ffffff" />
+		<RowIndentation>3</RowIndentation>
+		<ExplicitIdentifier>
+			<Identifier>MAXD</Identifier>
+			<FirstColumn>0</FirstColumn>
+			<NumberFormat Width="7" Decimals="3" />
+		</ExplicitIdentifier>
+	</PageObject>
+	<UsedReferences>
+		<Model>
+>>>>>>> origin/master
 			<Symbol>AllSolvers</Symbol>
 			<Symbol>ESCE</Symbol>
 			<Symbol>LEER_TODO</Symbol>
 			<Symbol>MAXD</Symbol>
 			<Symbol>SolucionMCDP</Symbol>
 			<Symbol>IMprimirEstadisticos</Symbol>
+<<<<<<< HEAD
+=======
+			<Symbol>RestriccionesSOS</Symbol>
+			<Symbol>Rest_SOS_Actual</Symbol>
+>>>>>>> origin/master
 			<Symbol>SolverSet</Symbol>
 			<Symbol>RedDomCon</Symbol>
 			<Symbol>RedDomPlaFI</Symbol>
 			<Symbol>ModeloActual</Symbol>
+<<<<<<< HEAD
+=======
+			<Symbol>Modelos</Symbol>
+>>>>>>> origin/master
 		</Model>
 	</UsedReferences>
 </Page>
