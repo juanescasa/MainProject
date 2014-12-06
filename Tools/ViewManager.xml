@@ -5,7 +5,7 @@
 	<Column Attribute="default" ColumnWidth="100" />
 </ViewDefinition>
 <ViewDefinition Name="Domain - Definition">
-	<IdentifierColumnWidth>64</IdentifierColumnWidth>
+	<IdentifierColumnWidth>114</IdentifierColumnWidth>
 	<Column Attribute="index domain" ColumnWidth="344" />
 	<Column Attribute="definition" ColumnWidth="389" />
 	<Column Attribute="text" ColumnWidth="441" />

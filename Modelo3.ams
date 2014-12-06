@@ -1915,12 +1915,12 @@ Model MCDP {
                 Reglas de Conectividad para reducción de Dominio:"
             }
         }
-        Procedure Seleccion_PAB_Mas_Cercana_EDS {
+        Procedure Seleccion_PAB_NPE_Mas_Cercana_EDS {
             Body: {
                 !Obteniendo la planta j más cercana a la EDS i
                 SBIGM:=100000000000000000;
                 MINI:=SBIGM;
-                For i in NCL do
+                For i in (NCL+NOP) do
                        for j in NPO do
                                if TIVI(i,j)<MINI then !Identificando si TIVI es menor al paramero auxiliar MINI
                                       MINI:=TIVI(i,j); !Reemplazando MINT, haciendolo = a TIVI en caso de que TIVI sea MENOR
@@ -1930,7 +1930,21 @@ Model MCDP {
                        endfor;
                         MINI:=SBIGM; !Inicializando la Bigm
                 Endfor;
+                
+                !Obteniendo el nodo de pernoctacion j más cercano a la EDS i
+                SBIGM:=100000000000000000;
+                MINI:=SBIGM;
+                For i in NCL do
+                       for j in NPE do
+                               if TIVI(i,j)<MINI then !Identificando si TIVI es menor al paramero auxiliar MINI
+                                      MINI:=TIVI(i,j); !Reemplazando MINT, haciendolo = a TIVI en caso de que TIVI sea MENOR
+                                      NPEC(i):=j; !elemento parámetro para usar como Indice
+                               endif;
+                       endfor;
+                        MINI:=SBIGM; !Inicializando la Bigm
+                Endfor;
             }
+            Comment: "Seleccion_PAB y Nodo de Pernoctacion Mas Cercano  a la EDS";
         }
         Procedure Calculo_Reducc_Dom_Conectividad_SUV {
             Body: {
@@ -2021,6 +2035,13 @@ Model MCDP {
                     Text: "Tiempo máximo ala planta ficticia ";
                     Definition: 3;
                     Comment: "Es el tiempo por encima del cual un vehículo no puede  revisitar a la planta de abastecimiento en el mismo periodo.";
+                }
+                Parameter TJOR {
+                    Text: "Tiempo de la jornada laboral promedio";
+                    Definition: sum((k,t), TFJO(k,t) - TIJO(k,t))/(CARD(VEH)*PEPA);
+                }
+                Parameter AUXT {
+                    Text: "Auxiliar que se refiere al tiempo de conectividad entre una EDS y una planta";
                 }
                 StringParameter MsjeValidacion;
                 Parameter SCON1 {
@@ -2177,11 +2198,8 @@ Model MCDP {
                 }
                 ElementParameter ENPP {
                     IndexDomain: j;
-                    Text: "Nodo de pernoctación i  a sociado al nodo origen j";
+                    Text: "Nodo origen i asociado a nodo de pernoctación j";
                     Range: NOD;
-                    Definition: {
-                        !{i|PNPP(i,j)=1}
-                    }
                 }
                 ElementParameter ENPP2 {
                     IndexDomain: j;
@@ -2215,6 +2233,11 @@ Model MCDP {
                     IndexDomain: i in NCL;
                     SubsetOf: NPA;
                     Text: "Planta Más Cercana a la EDS i ";
+                }
+                ElementParameter NPEC {
+                    IndexDomain: i;
+                    Text: "Nodo de pernoctacion mas cercano al cliente i";
+                    Range: NOD;
                 }
             }
             Procedure Definicion_ENPP {
@@ -2339,51 +2362,76 @@ Model MCDP {
                 Body: {
                     Definicion_ENPP;
                     !empty MsjeValidacion, AUXI2;
-                    for i IN NCL do
-                        AUXI2:=0;
-                        if SCON1(i)=0 then !Si no hay posibilidades de salir de i a una planta
-                            for j IN NPE do !Busque si hay posibilidades de ir a un nodo de pernoctacion
-                                    if PCON(i,j)=1 then !Si encuentra dicho nodo de pernoctacion
-                                            if SCON1(ENPP(j))>0 then !Pregunte si el nodo origen asociado al nodo de pernoctacion j se conecta con una planta
-                                                    AUXI2:=1; !Hay conectividad
-                                                    break;
-                                            endif;
-                                    endif;
-                            endfor;
-                            If  AUXI2=0 then
-                                    MsjeValidacion := MsjeValidacion + "\n" + "Del nodo "  + i +" No hay forma de volver a una planta de abastecimiento, ni directo, ni a traves de un nodo de pernoctacion" ;
-                            endif;
-                         endif;
-                    endfor;
-                    !dialogerror (MsjeValidacion);
-                    
-                    
-                    
-                    
-                    !empty AUXI2, MsjeValidacion;
-                    for i IN NCL do
-                        AUXI2:=0;
-                        if SCON2(i)=0 then !Si no hay posibilidades llegar a la EDS desde una Planta
-                            for j IN NOP do !Busque si hay posibilidades llegar a la  EDS desde un nodo origen
-                                    if PCON(j,i)=1 then !Si encuentra dicho nodo origen
-                                            if SCON2(ENPP2(j))>0 then !Pregunte si el nodo de pernoctación asociado al nodo de origen j se conecta con una planta
-                                                    AUXI2:=1; !Hay conectividad
-                                                    break;
-                                            endif;
-                                    endif;
-                            endfor;
-                            If  AUXI2=0 then
-                                    MsjeValidacion := MsjeValidacion + "\n" + "Al Nodo "  + i +" No hay forma de llegar desde una  planta de abastecimiento, ni directo, ni a traves de un nodo origen" ;
-                            endif;
-                         endif;
-                    endfor;
+                    !for i IN NCL do
+                    !    AUXI2:=0;
+                    !    !Calcule cuanto tiempo tomaria llegar a la planta más cercana
+                    !    AUXT:= TIVI(i,epce(i));
+                    !    if SCON1(i)=0 or AUXT>TJOR then !Si no hay posibilidades de salir de i a una planta por conectividad o por tiempo
+                    !    	for j IN NPE do !Busque si hay posibilidades de ir a un nodo de pernoctacion
+                    !                if PCON(i,j)=1 then !Si encuentra dicho nodo de pernoctacion
+                    !                        if SCON1(ENPP(j))>0 then !Pregunte si el nodo origen asociado al nodo de pernoctacion j se conecta con una planta
+                    !                                AUXT:= TIVI(i,j)+TIVI(ENPP(j), EPCE(ENPP(j)));!Calcule el tiempo que hay del cliente a la planta
+                    !                                !Cliente_Nodo de Pernoctacion + NodoOrigen_Planta
+                    !                                if AUXT<TJOR then
+                    !                                	AUXI2:=1; !Hay conectividad
+                    !                                	break;
+                    !                                endif;
+                    !
+                    !                        endif;
+                    !                endif;
+                    !        endfor;
+                    !        If  AUXI2=0 then
+                    !                MsjeValidacion := MsjeValidacion + "\n" + "Del nodo "  + i +" No hay forma de volver a una planta de abastecimiento, ni directo, ni a traves de un nodo de pernoctacion" ;
+                    !        	if AUXT>TJOR then
+                    !        		MsjeValidacion := MsjeValidacion + ". Es posible que no se pueda volver a la planta de abastecimiento porque el tiempo de viaje de la EDS a la (nodo pernoctacion +) planta sea mayor que la jornada laboral." + "\n" +
+                    !        		"Revise tambien las ventanas de tiempo entre los nodos que causan el problema"
+                    !        	endif;
+                    !        endif;
+                    !    endif;
+                    !endfor;
+                    !!dialogerror (MsjeValidacion);
+                    !
+                    !!empty AUXI2, MsjeValidacion;
+                    !for i IN NCL do
+                    !    AUXI2:=0;
+                    !    AUXT:= TIVI(epce(i),i)+TSEP(i)+TSEP(epce(i));
+                    !
+                    !    if SCON2(i)=0 or AUXT>TJOR then !Si no hay posibilidades llegar a la EDS desde una Planta o el tiempo es mayor al de la jornada laboral
+                    !
+                    !        for j IN NOP do !Busque si hay posibilidades llegar a la  EDS desde un nodo origen
+                    !                if PCON(j,i)=1 then !Si encuentra dicho nodo origen
+                    !                        if SCON2(ENPP2(j))>0 then !Pregunte si el nodo de pernoctación asociado al nodo de origen j se conecta con una planta
+                    !                                AUXT:=TIVI(EPCE(ENPP2(j)),ENPP2(j))+TSEP(EPCE(ENPP2(j)))+TIVI(j,i)+TSEP(i);
+                    !                                if AUXT<TJOR then
+                    !                                	AUXI2:=1; !Hay conectividad
+                    !                                	break;
+                    !                                endif;
+                    !
+                    !                        endif;
+                    !                endif;
+                    !        endfor;
+                    !        If  AUXI2=0 then
+                    !                MsjeValidacion := MsjeValidacion + "\n" + "Al Nodo "  + i +" No hay forma de llegar desde una  planta de abastecimiento, ni directo, ni a traves de un nodo origen" ;
+                    !        	if AUXT>TJOR then
+                    !        		MsjeValidacion := MsjeValidacion + ". Es posible que no se pueda ir porque el tiempo de viaje de la planta a la (nodo pernoctacion +) EDS sea mayor que la jornada laboral." + "\n" +
+                    !        		"Revise tambien las ventanas de tiempo entre los nodos que causan el problema"
+                    !        	endif;
+                    !        endif;
+                    !     endif;
+                    !endfor;
                     !dialogerror (MsjeValidacion)
+                    
+                    !A todos los nodos clientes debería poder ir en menos de una jornada laboral
+                    for i |i in NCL  do
+                    	if TIVI(EPCE(i),i)+TIVI(i,NPEC(i))+TSEP(EPCE(i))+TSEP(i)>TJOR then
+                    		MsjeValidacion := MsjeValidacion + "\n" + "Al Nodo "  + i +" puede que no se pueda llegar desde una  planta de abastecimiento,"
+                    		+ "\n" +  " ya que el tiempo de viaje desde la planta al nodo y de alli a la pernoctación es mayor que el tiempo de la jornada laboral promedio"
+                    	endif;
+                    endfor;
                 }
                 Comment: {
-                    "Revisado
-                    Valida que exista conectividad de una PAB a una EDS. La conectividad Puede ser directa o indirecta.
-                    (Directa si se viaja directo a la planta, e indirecta si se viaja primero a un nodo de pernoctación)
-                    El MODELO  supone que de una planta de Abastecimiento a una estación puedo llegar en menos de dos periodos."
+                    "El procedimiento que esta en comentarios se debe revisar.
+                    Quedamos satisfechos con lo ultimo, algo rapido y facil de probar."
                 }
             }
             Procedure Validacion_CAPV_DENS {
@@ -2712,14 +2760,16 @@ Model MCDP {
                     CalculoConjuntos;
                     CalculoConectividadRed;
                     !Ojo estos Procedimientos solo deben dejarse activos cuando quiero trabajar con conecividad reducida
-                    Seleccion_PAB_Mas_Cercana_EDS;
+                    Seleccion_PAB_NPE_Mas_Cercana_EDS;
                     Calculo_Reducc_Dom_Conectividad_SUV;
                     Calculo_Reducc_Dom_PFICT;
                     
+                    !empty MsjeValidacion
                     Definicion_ENPP;
                     Validacion_INVI_CAPS;
                     Validacion_PNOI_PNPV;
                     Validacion_TIJO_TFIJO;
+                    Validacion_CONECTIVIDAD_TIEMPO;
                     Validacion_CONECTIVIDAD;
                     Validacion_CAPV_DENS;
                     Validacion_DEM_CACC;
@@ -2758,7 +2808,7 @@ Model MCDP {
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
+                Seleccion_PAB_NPE_Mas_Cercana_EDS;
                 
                 if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
                 	Calculo_Reducc_Dom_Conectividad_CUV;
@@ -2779,7 +2829,7 @@ Model MCDP {
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
+                Seleccion_PAB_NPE_Mas_Cercana_EDS;
                 
                 if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
                 	Calculo_Reducc_Dom_Conectividad_CUV;
@@ -2800,7 +2850,7 @@ Model MCDP {
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
+                Seleccion_PAB_NPE_Mas_Cercana_EDS;
                 
                 if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
                 	Calculo_Reducc_Dom_Conectividad_CUV;
@@ -2821,7 +2871,7 @@ Model MCDP {
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
+                Seleccion_PAB_NPE_Mas_Cercana_EDS;
                 if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
                 	Calculo_Reducc_Dom_Conectividad_SUV;
                 endif ;
@@ -2847,7 +2897,7 @@ Model MCDP {
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
+                Seleccion_PAB_NPE_Mas_Cercana_EDS;
                 if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
                 	Calculo_Reducc_Dom_Conectividad_SUV;
                 endif ;
@@ -2874,7 +2924,7 @@ Model MCDP {
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
+                Seleccion_PAB_NPE_Mas_Cercana_EDS;
                 if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
                 	Calculo_Reducc_Dom_Conectividad_SUV;
                 endif ;
@@ -2893,7 +2943,7 @@ Model MCDP {
                 CalculoConjuntos;
                 CalculoConectividadRed;
                 InicializacionVariables;
-                Seleccion_PAB_Mas_Cercana_EDS;
+                Seleccion_PAB_NPE_Mas_Cercana_EDS;
                 if RedDomCon="SI" then !desde Page Manager se determina el StringParametro
                 	Calculo_Reducc_Dom_Conectividad_SUV;
                 endif ;
